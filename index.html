@@ -4,151 +4,198 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>RimWorld Apparel Planner</title>
+<meta name="description" content="Plan RimWorld outfits and compare how every material changes armor and insulation.">
 <style>
 :root{
-  --bg:#16181b; --panel:#1f2226; --panel2:#262a2f; --line:#353a41; --line2:#454b53;
-  --text:#e6e1d6; --muted:#9a968c; --dim:#6f6c66;
-  --accent:#d9b36a; --accent2:#f0d49a;
-  --good:#7fbf6a; --bad:#d9725f; --info:#6fa8d6;
-  --sharp:#d98a5f; --blunt:#b5a36a; --heatA:#d96a6a; --cold:#6fb3d9; --hot:#e0a050;
+  --bg:#141619; --panel:#1d2024; --panel2:#24282d; --panel3:#2b3036; --line:#343940; --line2:#4a5058;
+  --text:#ece7dc; --muted:#b4aea2; --dim:#8a857c;
+  --accent:#e0b866; --accent2:#f3d9a0; --accentBg:#3a3222;
+  --good:#8fd27a; --bad:#ec7f6b; --info:#7db6e3;
+  --sharp:#f0a070; --blunt:#d8c47e; --heatA:#f07b7b; --cold:#7cc4ee; --hot:#f2b25c;
   --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --r:7px;
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-html,body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 "Segoe UI",system-ui,sans-serif}
+html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 "Segoe UI",system-ui,sans-serif}
 button,select,input{font:inherit;color:inherit}
-header{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:12px 18px;border-bottom:1px solid var(--line);background:#121417}
-header h1{font-size:17px;margin:0;letter-spacing:.3px;color:var(--accent2);font-weight:600}
-header .ver{color:var(--dim);font-size:12px}
-header .spacer{flex:1}
-.ctl{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
-select,input[type=number]{background:var(--panel2);border:1px solid var(--line2);border-radius:4px;padding:4px 6px}
-select:focus,input:focus,button:focus-visible{outline:1px solid var(--accent);outline-offset:1px}
-.btn{background:var(--panel2);border:1px solid var(--line2);border-radius:4px;padding:4px 10px;cursor:pointer}
+select,input[type=number],input[type=text],input[type=search]{background:var(--panel2);border:1px solid var(--line2);border-radius:5px;padding:5px 8px}
+select:focus,input:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.btn{background:var(--panel3);border:1px solid var(--line2);border-radius:5px;padding:6px 12px;cursor:pointer;white-space:nowrap}
 .btn:hover{border-color:var(--accent);color:var(--accent2)}
-.btn.sm{padding:2px 7px;font-size:12px}
-.btn.ghost{background:none;border-color:transparent;color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#1b1608;font-weight:600}
+.btn.primary:hover{background:var(--accent2);color:#1b1608}
+.btn.sm{padding:3px 9px;font-size:13px}
+.btn.ghost{background:none;border-color:transparent;color:var(--dim)}
 .btn.ghost:hover{color:var(--bad);border-color:transparent}
 
-main{display:grid;grid-template-columns:290px minmax(0,1fr) 400px;gap:12px;padding:12px;align-items:start}
-@media (max-width:1280px){main{grid-template-columns:280px minmax(0,1fr)} #summary{grid-column:1 / -1}}
-@media (max-width:820px){main{grid-template-columns:minmax(0,1fr);padding:8px 16px} header{padding:10px 16px}}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;min-width:0}
-.panel>h2{margin:0;padding:9px 12px;font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
-.panel>h2 .r{margin-left:auto;text-transform:none;letter-spacing:0}
-.pad{padding:10px 12px}
+header{display:flex;align-items:center;gap:14px 18px;flex-wrap:wrap;padding:12px 18px;border-bottom:1px solid var(--line);background:#101215;position:sticky;top:0;z-index:5}
+header h1{font-size:19px;margin:0;color:var(--accent2);font-weight:650}
+header .ver{color:var(--dim);font-size:13px}
+header .spacer{flex:1}
+.ctl{display:flex;align-items:center;gap:7px;font-size:14px;color:var(--muted)}
+
+main{display:grid;grid-template-columns:270px minmax(0,1fr) 420px;gap:14px;padding:14px;align-items:start}
+@media (max-width:1350px){main{grid-template-columns:250px minmax(0,1fr)} #summary{grid-column:1 / -1}}
+@media (max-width:820px){main{grid-template-columns:minmax(0,1fr);padding:10px 16px} header{padding:10px 16px;position:static}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);min-width:0}
+.panel>h2{margin:0;padding:11px 14px;font-size:15px;font-weight:650;color:var(--text);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.panel>h2 .r{margin-left:auto;display:flex;gap:6px;font-weight:400}
+.panel>h2 .sub{font-size:13px;color:var(--dim);font-weight:400}
+.pad{padding:12px 14px}
 
 /* picker */
-#picker .search{width:100%;background:var(--panel2);border:1px solid var(--line2);border-radius:4px;padding:6px 8px;margin-bottom:6px}
-.grp{margin-top:8px}
-.grp-h{font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);margin:6px 0 4px}
-.it{display:flex;align-items:center;gap:6px;padding:5px 6px;border-radius:4px;cursor:pointer;border:1px solid transparent}
+#search{width:100%;margin-bottom:4px}
+.grp-h{font-size:12.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--accent);margin:14px 0 5px}
+.it{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:5px;cursor:pointer;border:1px solid transparent}
 .it:hover{background:var(--panel2);border-color:var(--line2)}
-.it.worn{background:#2c2a22;border-color:#5a4e30}
+.it.worn{background:var(--accentBg);border-color:#6b5a33}
 .it .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.it .tag{font-size:10px;color:var(--dim);white-space:nowrap}
-.it .add{font-size:11px;color:var(--muted)}
+.it .tag{font-size:12px;color:var(--dim);white-space:nowrap}
+.it .add{width:16px;text-align:center;color:var(--dim)}
 .it.worn .add{color:var(--accent)}
 
-/* loadout */
-#loadout{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
+/* outfit */
+#loadout{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:10px}
 #loadout .empty{grid-column:1/-1}
-.slot{border:1px solid var(--line);border-radius:5px;padding:8px;background:var(--panel2);cursor:pointer}
+.slot{border:1px solid var(--line);border-radius:6px;padding:10px 12px;background:var(--panel2);cursor:pointer}
+.slot:hover{border-color:var(--line2)}
 .slot.focus{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
-.slot .top{display:flex;align-items:center;gap:6px}
-.slot .top b{font-weight:600}
-.slot .layers{font-size:11px;color:var(--dim)}
-.slot .row{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
-.slot .row select{flex:1;min-width:110px}
-.slot .stats{display:flex;gap:10px;margin-top:6px;font-family:var(--mono);font-size:12px;flex-wrap:wrap}
-.empty{color:var(--dim);font-style:italic;padding:8px 2px}
-.chip{display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;background:#30343a;color:var(--muted);margin:1px 2px 1px 0}
-.sw{display:inline-block;width:10px;height:10px;border-radius:2px;border:1px solid #0006;vertical-align:-1px;margin-right:5px}
+.slot .top{display:flex;align-items:baseline;gap:8px}
+.slot .top b{font-size:16px;font-weight:650}
+.slot .layers{font-size:12.5px;color:var(--dim);margin-top:1px}
+.slot .row{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.slot .row select{flex:1;min-width:120px}
+.mini{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:9px}
+.mini div{background:var(--panel);border-radius:4px;padding:3px 6px;text-align:center}
+.mini i{display:block;font-style:normal;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.4px}
+.mini b{font-family:var(--mono);font-size:13.5px;font-weight:600}
+.empty{color:var(--dim);padding:10px 2px}
+.chip{display:inline-block;font-size:12px;padding:1px 7px;border-radius:4px;background:var(--panel3);color:var(--muted);margin:2px 3px 2px 0}
+.sw{display:inline-block;width:11px;height:11px;border-radius:3px;border:1px solid #0008;vertical-align:-1px;margin-right:6px}
 
-/* focus / material table */
-#focus .head{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
-#focus .head h3{margin:0;font-size:18px;color:var(--accent2)}
-#focus .desc{color:var(--muted);font-size:12.5px;max-width:70ch;margin-top:3px}
-#focus .meta{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--muted);margin-top:6px}
-#focus .meta b{color:var(--text);font-weight:500}
-.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0 6px;font-size:12.5px;color:var(--muted)}
-.filters label{display:flex;gap:4px;align-items:center;cursor:pointer}
-.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:5px}
+/* material comparison */
+#focus .head h3{margin:0;font-size:20px;color:var(--accent2)}
+#focus .desc{color:var(--muted);font-size:14px;max-width:80ch;margin-top:3px}
+.facts{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13.5px;color:var(--dim);margin-top:8px}
+.facts b{color:var(--text);font-weight:550}
+.filters{display:flex;gap:8px 16px;flex-wrap:wrap;align-items:center;margin:14px 0 8px;font-size:14px;color:var(--muted)}
+.filters label{display:flex;gap:5px;align-items:center;cursor:pointer}
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px}
 table{border-collapse:collapse;width:100%}
-th,td{padding:5px 8px;text-align:right;white-space:nowrap}
-th{position:sticky;top:0;background:#2a2e34;font-weight:600;font-size:11.5px;color:var(--muted);cursor:pointer;user-select:none;border-bottom:1px solid var(--line2)}
-th:hover{color:var(--accent2)}
+th,td{padding:7px 10px;text-align:right;white-space:nowrap}
+th{position:sticky;top:0;background:#2a2f35;font-weight:600;font-size:13px;color:var(--muted);user-select:none;border-bottom:1px solid var(--line2)}
+th[data-sort]{cursor:pointer} th[data-sort]:hover{color:var(--accent2)}
 th.sorted{color:var(--accent2)}
+th small{display:block;font-weight:400;font-size:11.5px;color:var(--dim)}
 th:first-child,td:first-child{text-align:left}
-#mtable tbody tr{border-top:1px solid #2b2f35;cursor:pointer}
-#mtable tbody tr:hover{background:#2a2d32}
-#mtable tbody tr.cur{background:#3a3424;outline:1px solid #6b5a33}
-#mtable tbody tr.restricted td:first-child::after{content:" ⚑";color:var(--dim);font-size:11px}
-.cell{position:relative;font-family:var(--mono);font-size:12.5px}
-.cell .bar{position:absolute;left:0;bottom:2px;height:3px;border-radius:2px;opacity:.75}
-.cell .d{display:block;font-size:10.5px;line-height:1.1}
+#mtable tbody tr{border-top:1px solid #2c3036;cursor:pointer}
+#mtable tbody tr:nth-child(even){background:#202327}
+#mtable tbody tr:hover{background:#2c3036}
+#mtable tbody tr.cur{background:var(--accentBg);outline:1px solid #6b5a33}
+.cell{position:relative;font-family:var(--mono);font-size:14px}
+.cell .bar{position:absolute;left:6px;right:6px;bottom:3px;height:3px;border-radius:2px;background:#ffffff10}
+.cell .bar i{display:block;height:100%;border-radius:2px;opacity:.85}
+.cell .d{display:block;font-size:12px;line-height:1.15;margin-bottom:3px}
 .pos{color:var(--good)} .neg{color:var(--bad)} .zero{color:var(--dim)}
-.best{font-weight:700;color:var(--accent2)}
-.legend{font-size:11.5px;color:var(--dim);margin-top:6px}
+.best{font-weight:800;color:var(--accent2)}
+.flag{color:var(--dim);font-size:12px;margin-left:4px}
+.legend{font-size:13px;color:var(--dim);margin-top:8px}
 
 /* summary */
-.kv{display:grid;grid-template-columns:1fr auto;gap:3px 10px;font-size:13px}
+.big{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.big div{background:var(--panel2);border-radius:6px;padding:8px 10px}
+.big i{display:block;font-style:normal;font-size:12px;color:var(--dim)}
+.big b{font-family:var(--mono);font-size:17px;font-weight:600}
+.kv{display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:14px;margin-top:10px}
 .kv .v{font-family:var(--mono);text-align:right}
-.temp{margin:8px 0 4px}
-.tbar{position:relative;height:16px;border-radius:3px;background:linear-gradient(90deg,#2f5f86 0%,#3b7d9f 35%,#5f8f5a 50%,#a0773a 65%,#9a3f30 100%);opacity:.9}
-.tbar .rng{position:absolute;top:-3px;bottom:-3px;border:2px solid var(--accent2);border-radius:3px;background:#ffffff18}
-.tscale{display:flex;justify-content:space-between;font-size:10.5px;color:var(--dim);font-family:var(--mono);margin-top:2px}
-.sect{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
-.sect h4{margin:0 0 6px;font-size:11.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-#body td,#body th{padding:4px 5px;font-size:12px}
-#body th{cursor:default}
+.temp{margin:12px 0 2px}
+.tbar{position:relative;height:18px;border-radius:4px;background:linear-gradient(90deg,#2d5d86 0%,#3b7d9f 35%,#5f8f5a 50%,#a0773a 65%,#9a3f30 100%)}
+.tbar .rng{position:absolute;top:-3px;bottom:-3px;border:2px solid var(--accent2);border-radius:4px;background:#ffffff22}
+.tscale{display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim);font-family:var(--mono);margin-top:3px}
+.sect{margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+.sect h4{margin:0 0 8px;font-size:15px;font-weight:650;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.sect h4 span{font-size:13px;color:var(--dim);font-weight:400}
+#body td,#body th{padding:6px 7px;font-size:13.5px}
 #body td.reg{font-weight:600}
-#body{table-layout:auto}
-#body .lay{font-size:11px;color:var(--muted);text-align:left;white-space:normal;width:100%}
+#body .lay{text-align:left;white-space:normal;width:100%}
 #body .chip{white-space:nowrap}
-.pct{font-family:var(--mono)}
-.heat0{color:var(--good)} .heat1{color:#b8c46a} .heat2{color:var(--hot)} .heat3{color:var(--bad)}
-.note{font-size:11.5px;color:var(--dim);margin-top:6px}
-.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#2d2a20;border:1px solid var(--accent);color:var(--accent2);padding:7px 14px;border-radius:5px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9;max-width:calc(100% - 32px)}
-.toast.on{opacity:1}
-.presets{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
-details.help{font-size:12.5px;color:var(--muted)}
+.dmg{display:flex;align-items:center;gap:6px;justify-content:flex-end;font-family:var(--mono)}
+.dmg .b{width:46px;height:7px;border-radius:3px;background:#ffffff12;overflow:hidden}
+.dmg .b i{display:block;height:100%}
+.note{font-size:13px;color:var(--dim);margin-top:8px}
+details.help{font-size:14px;color:var(--muted)}
 details.help summary{cursor:pointer;color:var(--accent)}
 details.help p{margin:6px 0}
-code{font-family:var(--mono);font-size:12px;color:var(--accent2)}
+code{font-family:var(--mono);font-size:13px;color:var(--accent2)}
+
+/* toast */
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(10px);background:#2d2a20;border:1px solid var(--accent);color:var(--accent2);padding:9px 14px;border-radius:7px;font-size:14px;opacity:0;transition:.2s;pointer-events:none;z-index:30;display:flex;gap:12px;align-items:center;max-width:calc(100% - 32px)}
+.toast.on{opacity:1;transform:translateX(-50%);pointer-events:auto}
+
+/* presets dialog */
+.modal{position:fixed;inset:0;background:#000a;z-index:20;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto}
+.dlg{background:var(--panel);border:1px solid var(--line2);border-radius:10px;width:min(1180px,100%);box-shadow:0 20px 60px #000c}
+.dlg-h{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.dlg-h h2{margin:0;font-size:19px;color:var(--accent2)}
+.tabs{display:flex;gap:4px;padding:10px 18px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.tab{background:none;border:1px solid transparent;border-bottom:none;border-radius:6px 6px 0 0;padding:8px 14px;cursor:pointer;color:var(--muted);font-weight:600}
+.tab:hover{color:var(--accent2)}
+.tab.on{background:var(--panel2);border-color:var(--line);color:var(--accent2);margin-bottom:-1px;border-bottom:1px solid var(--panel2)}
+.dlg-opts{display:flex;gap:10px 20px;flex-wrap:wrap;align-items:center;padding:12px 18px;background:var(--panel2);font-size:14px;color:var(--muted)}
+.dlg-opts label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.dlg-body{padding:16px 18px 20px}
+.cat-h{font-size:12.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--accent);margin:4px 0 8px}
+.cat-h:not(:first-child){margin-top:20px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.card{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px 13px;cursor:pointer;display:flex;flex-direction:column;gap:6px;text-align:left}
+.card:hover{border-color:var(--accent);background:#2a2e33}
+.card .t{display:flex;align-items:baseline;gap:8px}
+.card .t b{font-size:16px;font-weight:650;color:var(--text)}
+.card .t .stage{margin-left:auto;font-size:11.5px;padding:1px 7px;border-radius:10px;background:var(--panel3);color:var(--muted);white-space:nowrap}
+.card p{margin:0;font-size:13.5px;color:var(--muted)}
+.card .items{font-size:13px;color:var(--dim);line-height:1.5}
+.card .items span{color:var(--text)}
+.card .kpis{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:4px}
+.card .kpis span{font-family:var(--mono);font-size:12.5px;background:var(--panel);border-radius:4px;padding:2px 7px;color:var(--muted)}
+.card .kpis span b{color:var(--text);font-weight:600}
+.card .acts{display:flex;gap:6px;justify-content:flex-end}
+.save-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.save-row input{flex:1;min-width:200px}
 </style>
 </head>
 <body>
 <header>
   <h1>RimWorld Apparel Planner</h1>
-  <span class="ver">Core data, game v1.6.4871</span>
+  <span class="ver">Core game data · v1.6.4871</span>
   <span class="spacer"></span>
-  <div class="ctl">Incoming attack
+  <button class="btn primary" id="openPresets">Presets</button>
+  <div class="ctl"><label for="weapon">Incoming attack</label>
     <select id="weapon"></select>
   </div>
-  <div class="ctl" id="customAP" hidden>AP <input id="apInput" type="number" min="0" max="200" step="1" style="width:64px">%</div>
-  <div class="ctl">Set all quality
+  <div class="ctl" id="customAP" hidden><label for="apInput">AP</label><input id="apInput" type="number" min="0" max="200" step="1" style="width:70px">%</div>
+  <div class="ctl"><label for="allQ">Set all quality</label>
     <select id="allQ"><option value="">—</option></select>
   </div>
 </header>
 
 <main>
   <section class="panel" id="picker">
-    <h2>Apparel <span class="r"><button class="btn sm" id="clearBtn" title="Remove everything">Clear outfit</button></span></h2>
+    <h2>Add apparel</h2>
     <div class="pad">
-      <input class="search" id="search" placeholder="Search apparel…" autocomplete="off">
-      <div class="presets" id="presets"></div>
+      <input type="search" id="search" placeholder="Search, e.g. helmet or legs" autocomplete="off">
       <div id="itemList"></div>
     </div>
   </section>
 
-  <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+  <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
     <section class="panel">
-      <h2>Worn outfit <span class="r" style="font-size:11.5px;color:var(--dim)">Click an item to compare its materials</span></h2>
+      <h2>Worn outfit <span class="sub" id="outfitName"></span>
+        <span class="r"><button class="btn sm" id="saveBtn">Save outfit</button><button class="btn sm" id="clearBtn">Clear</button></span></h2>
       <div class="pad" id="loadout"></div>
     </section>
     <section class="panel" id="focus">
-      <h2>Material comparison</h2>
+      <h2>Material comparison <span class="sub">every material the selected item can be made from</span></h2>
       <div class="pad" id="focusBody"></div>
     </section>
   </div>
@@ -158,7 +205,20 @@ code{font-family:var(--mono);font-size:12px;color:var(--accent2)}
     <div class="pad" id="summaryBody"></div>
   </section>
 </main>
-<div class="toast" id="toast"></div>
+
+<div class="modal" id="presetModal" hidden>
+  <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="presetTitle">
+    <div class="dlg-h"><h2 id="presetTitle">Presets</h2><span style="color:var(--dim);font-size:14px">Click a card to wear it. You can undo to get your current outfit back.</span><span style="flex:1"></span><button class="btn" id="closePresets">Close</button></div>
+    <div class="tabs" id="presetTabs"></div>
+    <div class="dlg-opts">
+      <label>Load items at quality <select id="presetQ"></select></label>
+      <label title="Gold, silver, plasteel and uranium are off in new bills by default"><input type="checkbox" id="presetRes"> Allow ⚑ materials (plasteel, uranium, gold, silver)</label>
+      <span id="presetWeaponNote"></span>
+    </div>
+    <div class="dlg-body" id="presetBody"></div>
+  </div>
+</div>
+<div class="toast" id="toast"><span id="toastMsg"></span><button class="btn sm" id="toastUndo" hidden>Undo</button></div>
 
 <script>
 const DATA = {"stuffs":[{"id":"Silver","label":"silver","cats":["Metallic"],"sharp":0.72,"blunt":0.36,"heat":0.36,"cold":3.0,"hot":0.0,"hpF":0.7,"workF":1,"color":"#b4ad96","desc":"This metal is mostly used as a commodity currency. It can also be used for making decorations."},{"id":"Gold","label":"gold","cats":["Metallic"],"sharp":0.72,"blunt":0.36,"heat":0.36,"cold":3.0,"hot":0.0,"hpF":0.6,"workF":0.9,"color":"#ffeb7a","desc":"The most seductive metal of them all. While it is too soft to be of much practical use, it is strikingly beautiful and never tarnishes. Millions have died in attempting to feed the endless human thirst for gold."},{"id":"Steel","label":"steel","cats":["Metallic"],"sharp":0.9,"blunt":0.45,"heat":0.6,"cold":3.0,"hot":0.0,"hpF":1.0,"workF":1,"color":"#696969","desc":"An iron-carbon metal alloy used for building a huge variety of structures, weapons, and machines."},{"id":"Plasteel","label":"plasteel","cats":["Metallic"],"sharp":1.14,"blunt":0.55,"heat":0.65,"cold":3.0,"hot":0.0,"hpF":2.8,"workF":2.2,"color":"#a0b2b5","desc":"Advanced spacer tech structural material. Plasteel is extremely strong due to its unique molecular structure."},{"id":"WoodLog","label":"wood","cats":["Woody"],"sharp":0.54,"blunt":0.54,"heat":0.4,"cold":8.0,"hot":4.0,"hpF":0.65,"workF":0.7,"color":"#856143","desc":"Wood from trees or other fibrous plants. Useful for building structures and weapons. It is a good fuel for campfires and generators, and can be refined into chemfuel. In a pinch, a piece of wood can be used as a weapon or a leg."},{"id":"Uranium","label":"uranium","cats":["Metallic"],"sharp":1.08,"blunt":0.54,"heat":0.65,"cold":3.0,"hot":0.0,"hpF":2.5,"workF":1.9,"color":"#646464","desc":"A dark, heavy metal. While it is best known as a fuel for nuclear devices, its extreme density and hardness also make it good for making certain weapons, armor, and ammunition."},{"id":"Cloth","label":"cloth","cats":["Fabric"],"sharp":0.36,"blunt":0.0,"heat":0.18,"cold":18.0,"hot":18.0,"hpF":1,"workF":1,"color":"#a29d98","desc":"Cloth woven from organic fibers."},{"id":"Synthread","label":"synthread","cats":["Fabric"],"sharp":0.94,"blunt":0.26,"heat":0.9,"cold":22.0,"hot":22.0,"hpF":1.3,"workF":1,"color":"#aedbe4","desc":"Spacer-tech synthetic fabric designed for making ordinary clothes. It is soft, light, strong, and insulates well."},{"id":"DevilstrandCloth","label":"devilstrand","cats":["Fabric"],"sharp":1.4,"blunt":0.36,"heat":3.0,"cold":20.0,"hot":24.0,"hpF":1.3,"workF":1,"color":"#b43c3c","desc":"Fabric spun from microfibers extracted from devilstrand mushrooms. It is very tough, good at insulating, and protects exceptionally well against flame."},{"id":"Hyperweave","label":"hyperweave","cats":["Fabric"],"sharp":2.0,"blunt":0.54,"heat":2.88,"cold":26.0,"hot":26.0,"hpF":2.4,"workF":1,"color":"#006a7e","desc":"Nano-fibers woven into sheets molecule-by-molecule using specialized production mechanites. While it flexes freely most of the time, it stiffens to absorb blows as they land, and is incredibly difficult to break. The secrets of its production are known only to the most advanced glitterworld cultures."},{"id":"WoolSheep","label":"sheep wool","cats":["Fabric"],"sharp":0.36,"blunt":0.0,"heat":1.1,"cold":26.0,"hot":10.0,"hpF":1,"workF":1,"color":"#dbd6d1","desc":"Sheep's wool. It provides good insulation."},{"id":"WoolAlpaca","label":"alpaca wool","cats":["Fabric"],"sharp":0.36,"blunt":0.0,"heat":1.1,"cold":30.0,"hot":16.0,"hpF":1,"workF":1,"color":"#b4946d","desc":"The remarkably soft wool of an alpaca. It is warm, protects well from heat, and fetches a high price."},{"id":"WoolMegasloth","label":"megasloth wool","cats":["Fabric"],"sharp":0.8,"blunt":0.0,"heat":1.1,"cold":34.0,"hot":12.0,"hpF":1,"workF":1,"color":"#bda174","desc":"While somewhat coarse, megasloth wool's long fibers make it very strong. It is exceptionally warm."},{"id":"WoolMuffalo","label":"muffalo wool","cats":["Fabric"],"sharp":0.36,"blunt":0.0,"heat":1.1,"cold":28.0,"hot":12.0,"hpF":1,"workF":1,"color":"#b3c0ba","desc":"Soft, light and provides very good insulation. Muffalo wool clothes can keep the body warm even in very cold conditions."},{"id":"WoolBison","label":"bison wool","cats":["Fabric"],"sharp":0.36,"blunt":0.0,"heat":1.1,"cold":26.0,"hot":12.0,"hpF":1,"workF":1,"color":"#68452d","desc":"Thick and coarse wool of a bison. Quite warm."},{"id":"Leather_Plain","label":"plainleather","cats":["Leathery"],"sharp":0.81,"blunt":0.24,"heat":1.5,"cold":16.0,"hot":16.0,"hpF":1.3,"workF":1,"color":"#a26a39","desc":"Tanned, dried, scraped skin. A good traditional material for making clothes and bags."},{"id":"Leather_Dog","label":"dog leather","cats":["Leathery"],"sharp":0.81,"blunt":0.24,"heat":1.5,"cold":14.0,"hot":16.0,"hpF":1.3,"workF":1,"color":"#d1a827","desc":"Tanned, dried, scraped skin. A good traditional material for making clothes and bags."},{"id":"Leather_Wolf","label":"wolfskin","cats":["Leathery"],"sharp":1.02,"blunt":0.24,"heat":1.5,"cold":24.0,"hot":16.0,"hpF":1.3,"workF":1,"color":"#736e64","desc":"A soft furry pelt harvested from a wolf-like creature. It is difficult to pierce and insulates well against cold."},{"id":"Leather_Panthera","label":"panthera fur","cats":["Leathery"],"sharp":0.93,"blunt":0.24,"heat":1.5,"cold":16.0,"hot":24.0,"hpF":1.3,"workF":1,"color":"#3c3c3c","desc":"A soft furry pelt harvested from a big cat. It is difficult to pierce and insulates well against heat."},{"id":"Leather_Camel","label":"camelhide","cats":["Leathery"],"sharp":0.81,"blunt":0.24,"heat":1.5,"cold":16.0,"hot":24.0,"hpF":1.3,"workF":1,"color":"#ccb496","desc":"Tanned, dried, scraped camel skin. Good at temperature regulation in hot climates."},{"id":"Leather_Bluefur","label":"bluefur","cats":["Leathery"],"sharp":0.81,"blunt":0.24,"heat":1.5,"cold":20.0,"hot":16.0,"hpF":1.3,"workF":1,"color":"#98aaae","desc":"The furry pelt of muffalo. Recognizable by its distinctive blue tint. Good at temperature regulation in cold climates."},{"id":"Leather_Bear","label":"bearskin","cats":["Leathery"],"sharp":1.12,"blunt":0.24,"heat":1.5,"cold":20.0,"hot":20.0,"hpF":1.3,"workF":1,"color":"#705241","desc":"The strong furry leather of a bear. Compared to most leather, it is quite a bit tougher and a bit better at all kinds of temperature regulation."},{"id":"Leather_GuineaPig","label":"guinea pig fur","cats":["Leathery"],"sharp":0.67,"blunt":0.14,"heat":1.5,"cold":38.0,"hot":18.0,"hpF":0.6,"workF":1,"color":"#b37d37","desc":"Sheets of guinea pig fur. It is delicate, but luxurious."},{"id":"Leather_Human","label":"human leather","cats":["Leathery"],"sharp":0.64,"blunt":0.24,"heat":1.5,"cold":12.0,"hot":12.0,"hpF":1.3,"workF":1,"color":"#d3c28f","desc":"Tanned, dried, scraped human skin. Most people find this material horrifying. Some find it fascinating. While a decent leather, it neither protects nor insulates particularly well."},{"id":"Leather_Pig","label":"pigskin","cats":["Leathery"],"sharp":0.64,"blunt":0.24,"heat":1.5,"cold":12.0,"hot":12.0,"hpF":1.3,"workF":1,"color":"#ae967e","desc":"Tanned, dried, scraped pig skin. While a decent leather, it neither protects nor insulates particularly well."},{"id":"Leather_Light","label":"lightleather","cats":["Leathery"],"sharp":0.54,"blunt":0.14,"heat":1.5,"cold":12.0,"hot":12.0,"hpF":1.0,"workF":1,"color":"#8c5524","desc":"Lightweight, thin leather. Probably harvested from a small animal. Not as protective as thicker leathers."},{"id":"Leather_Bird","label":"birdskin","cats":["Leathery"],"sharp":0.67,"blunt":0.14,"heat":1.5,"cold":10.0,"hot":10.0,"hpF":1.0,"workF":1,"color":"#4c5363","desc":"Tanned, dried, scraped bird skin. It is quite delicate. Without its feathers, it provides little protection from heat or cold."},{"id":"Leather_Chinchilla","label":"chinchilla fur","cats":["Leathery"],"sharp":0.67,"blunt":0.14,"heat":1.5,"cold":30.0,"hot":16.0,"hpF":1.0,"workF":1,"color":"#b2aa9e","desc":"Tanned, dried, scraped chinchilla skin. Known as an extremely luxurious and insulating fur, it is exceptionally valuable."},{"id":"Leather_Fox","label":"foxfur","cats":["Leathery"],"sharp":0.81,"blunt":0.21,"heat":1.5,"cold":20.0,"hot":16.0,"hpF":1.0,"workF":1,"color":"#b26422","desc":"The pelt of a fox. It protects well from the cold and is quite luxurious, fetching a high price."},{"id":"Leather_Lizard","label":"lizardskin","cats":["Leathery"],"sharp":0.81,"blunt":0.27,"heat":1.5,"cold":12.0,"hot":12.0,"hpF":1.0,"workF":1,"color":"#65743a","desc":"The tanned skin of a cold-blooded reptile. Lizardskin is reasonably tough, but does not insulate well at all."},{"id":"Leather_Elephant","label":"elephant leather","cats":["Leathery"],"sharp":1.12,"blunt":0.24,"heat":1.5,"cold":14.0,"hot":12.0,"hpF":1.5,"workF":1,"color":"#827e77","desc":"Tanned, dried, scraped elephant skin. While quite tough, it is a poor insulator."},{"id":"Leather_Heavy","label":"heavy fur","cats":["Leathery"],"sharp":1.24,"blunt":0.24,"heat":1.5,"cold":30.0,"hot":14.0,"hpF":1.5,"workF":1,"color":"#bda174","desc":"Thick leather covered in a long, rugged mat of fur. Harvested from a large, hardy animal. This thick skin insulates and protects very well."},{"id":"Leather_Rhinoceros","label":"rhinoceros leather","cats":["Leathery"],"sharp":1.29,"blunt":0.24,"heat":1.5,"cold":14.0,"hot":14.0,"hpF":1.5,"workF":1,"color":"#969696","desc":"Tanned, dried, scraped rhinoceros skin. It is exceptionally durable in combat, but provides little protection from weather."},{"id":"Leather_Thrumbo","label":"thrumbofur","cats":["Leathery"],"sharp":2.08,"blunt":0.36,"heat":1.5,"cold":34.0,"hot":22.0,"hpF":2.0,"workF":1,"color":"#e9e9e9","desc":"Furry pelt of a thrumbo. Luxurious and extraordinarily durable. Used for the highest-quality crafts for its insulation and strength."},{"id":"Leather_Patch","label":"patchleather","cats":["Leathery"],"sharp":0.45,"blunt":0.19,"heat":0.9,"cold":9.0,"hot":9.0,"hpF":1.0,"workF":1,"color":"#5a4b3c","desc":"A weak textile created by cutting up and sewing together various types of leathers. Regardless of what kind of leather is used to create it, patchleather's irregular seams make it less tough and less insulating than any intact leather."}],"apparel":[{"id":"Apparel_ShieldBelt","label":"shield belt","desc":"A projectile-repulsion device. It will attempt to stop incoming projectiles or shrapnel, but does nothing against melee attacks or heat. It prevents the wearer from firing out, and shuts down instantly if hit by EMP.","layers":["Belt"],"groups":["Waist"],"stuffCats":[],"count":0,"cost":{"ComponentIndustrial":2,"Steel":50,"Plasteel":20},"quality":true,"hp":100.0,"mass":3.0,"work":14000.0,"mult":{"armor":0,"cold":0,"hot":0},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":1.1},"equipped":{},"research":["ShieldBelt"]},{"id":"Apparel_CowboyHat","label":"cowboy hat","desc":"Stylish yet rugged, this hat keeps the sun and rain off - and it gives anyone who wears it a bit of extra charm. It is the most important part of traditional western attire.","layers":["Overhead"],"groups":["UpperHead"],"stuffCats":["Fabric","Leathery"],"count":25,"cost":{},"quality":true,"hp":80.0,"mass":0.14,"work":1800.0,"mult":{"armor":0.2,"cold":0.1,"hot":0.5},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{"SocialImpact":0.1,"SlaveSuppressionOffset":-0.05},"research":["ComplexClothing"]},{"id":"Apparel_BowlerHat","label":"bowler hat","desc":"A good-looking hat which projects a slightly urban, money-loving style. Improves social impact.","layers":["Overhead"],"groups":["UpperHead"],"stuffCats":["Fabric","Leathery"],"count":20,"cost":{},"quality":true,"hp":80.0,"mass":0.14,"work":1800.0,"mult":{"armor":0.2,"cold":0.1,"hot":0.4},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{"SocialImpact":0.15,"SlaveSuppressionOffset":-0.05},"research":["ComplexClothing"]},{"id":"Apparel_TribalHeaddress","label":"tribal headdress","desc":"Elegant traditional garb, often with religious significance. Improves social impact.","layers":["Overhead"],"groups":["UpperHead"],"stuffCats":["Fabric"],"count":50,"cost":{},"quality":true,"hp":100.0,"mass":0.11,"work":6000.0,"mult":{"armor":0.2,"cold":0.1,"hot":0.15},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{"SocialImpact":0.15,"SlaveSuppressionOffset":-0.1},"research":[]},{"id":"Apparel_Tuque","label":"tuque","desc":"A soft, thick cap. Great for keeping warm in winter.","layers":["Overhead"],"groups":["UpperHead"],"stuffCats":["Fabric"],"count":20,"cost":{},"quality":true,"hp":80.0,"mass":0.07,"work":1200.0,"mult":{"armor":0.2,"cold":0.5,"hot":0.0},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{},"research":["ComplexClothing"]},{"id":"Apparel_WarMask","label":"war mask","desc":"An artistically terrifying war mask. It hides the wearer's face and makes them more confident.","layers":["Overhead"],"groups":["FullHead"],"stuffCats":["Woody"],"count":25,"cost":{},"quality":true,"hp":80.0,"mass":1.4,"work":3000.0,"mult":{"armor":0.3,"cold":0.05,"hot":0.05},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{"PainShockThreshold":0.1},"research":[]},{"id":"Apparel_WarVeil","label":"veil","desc":"A piece of fabric which covers the wearer's face.","layers":["Overhead"],"groups":["FullHead"],"stuffCats":["Fabric"],"count":20,"cost":{},"quality":true,"hp":80.0,"mass":0.08,"work":1400.0,"mult":{"armor":0.2,"cold":0.05,"hot":0.05},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{"PainShockThreshold":0.05,"SlaveSuppressionOffset":-0.1,"ToxicEnvironmentResistance":0.35},"research":[]},{"id":"Apparel_SimpleHelmet","label":"simple helmet","desc":"A simple helmet which gives moderate protection against sharp attacks. Not effective against blunt weapons.","layers":["Overhead"],"groups":["UpperHead"],"stuffCats":["Metallic"],"count":40,"cost":{},"quality":true,"hp":100.0,"mass":2.0,"work":3200.0,"mult":{"armor":0.5,"cold":0.15,"hot":0.0},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{},"research":["Smithing"]},{"id":"Apparel_AdvancedHelmet","label":"flak helmet","desc":"A lightweight combat helmet with a complex design, reinforced with plasteel. Not effective against blunt weapons.","layers":["Overhead"],"groups":["UpperHead"],"stuffCats":["Metallic"],"count":40,"cost":{"ComponentIndustrial":2,"Plasteel":10},"quality":true,"hp":120.0,"mass":1.2,"work":8000.0,"mult":{"armor":0.7,"cold":0.15,"hot":0.0},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{},"research":["FlakArmor"]},{"id":"Apparel_PowerArmorHelmet","label":"marine helmet","desc":"A marine armor helmet, with a built-in status computer and layered plasteel-weave plates.\\n\\nArmor like this is often used by rapid-incursion space marines.","layers":["Overhead"],"groups":["FullHead"],"stuffCats":[],"count":0,"cost":{"ComponentSpacer":1,"Plasteel":40},"quality":true,"hp":150.0,"mass":1.5,"work":21000.0,"mult":{"armor":0,"cold":0,"hot":0},"base":{"sharp":1.06,"blunt":0.45,"heat":0.54,"cold":4.0,"hot":2.0,"shield":0},"equipped":{"SlaveSuppressionOffset":-0.1,"VacuumResistance":0.67},"research":["PoweredArmor"]},{"id":"Apparel_ArmorHelmetRecon","label":"recon helmet","desc":"A high-tech armored helmet with a built-in status computer and a protective plasteel-weave plate.\\n\\nArmor like this is often used by imperial scout troops or glitterworld police forces.","layers":["Overhead"],"groups":["FullHead"],"stuffCats":[],"count":0,"cost":{"ComponentSpacer":1,"Plasteel":30},"quality":true,"hp":120.0,"mass":1.0,"work":15750.0,"mult":{"armor":0,"cold":0,"hot":0},"base":{"sharp":0.92,"blunt":0.4,"heat":0.46,"cold":4.0,"hot":2.0,"shield":0},"equipped":{"SlaveSuppressionOffset":-0.1,"VacuumResistance":0.65},"research":["ReconArmor"]},{"id":"Apparel_PsychicFoilHelmet","label":"psychic foil helmet","desc":"A thin helmet containing finely-tuned sheets of psychically-absorptive foil. Reduces the impact of psychic waves.","layers":["Overhead"],"groups":["UpperHead"],"stuffCats":[],"count":0,"cost":{},"quality":true,"hp":80.0,"mass":1.0,"work":0,"mult":{"armor":0,"cold":0,"hot":0},"base":{"sharp":0.09,"blunt":0.09,"heat":0.27,"cold":2.0,"hot":1.0,"shield":0},"equipped":{"PsychicSensitivity":-0.9},"research":[]},{"id":"Apparel_HatHood","label":"hood","desc":"A draped hood which covers the head and ears.","layers":["Overhead"],"groups":["UpperHead"],"stuffCats":["Fabric","Leathery"],"count":50,"cost":{},"quality":true,"hp":80.0,"mass":0.1,"work":6000.0,"mult":{"armor":0.2,"cold":0.1,"hot":0.25},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{"SocialImpact":0.2},"research":[]},{"id":"Apparel_ClothMask","label":"face mask","desc":"A piece of fabric which covers the wearer's mouth and nose with several layers of textile. It is remarkably effective in reducing the effects of environmental toxins.","layers":["Overhead"],"groups":["Mouth"],"stuffCats":["Fabric"],"count":10,"cost":{},"quality":true,"hp":40.0,"mass":0.04,"work":800.0,"mult":{"armor":0.2,"cold":0.02,"hot":0.02},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{"ToxicEnvironmentResistance":0.5},"research":["ComplexClothing"]},{"id":"Apparel_SmokepopBelt","label":"smokepop pack","desc":"A defensive smokescreen. When activated, it will release a cloud of smoke, obscuring incoming shots and preventing turrets from locking on.","layers":["Belt"],"groups":["Waist"],"stuffCats":[],"count":0,"cost":{"ComponentIndustrial":1,"Steel":20,"Chemfuel":40},"quality":true,"hp":100.0,"mass":3.0,"work":3600.0,"mult":{"armor":0,"cold":0,"hot":0},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{},"research":["SmokepopBelt"]},{"id":"Apparel_FirefoampopPack","label":"firefoam pop pack","desc":"A utility pack made for firefighters. When triggered, a burst of fire-retardant foam is released, covering a wide circle around its wearer.","layers":["Belt"],"groups":["Waist"],"stuffCats":[],"count":0,"cost":{"ComponentIndustrial":1,"Steel":20,"Chemfuel":30},"quality":false,"hp":100.0,"mass":3.0,"work":3600.0,"mult":{"armor":0,"cold":0,"hot":0},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{},"research":["Firefoam"]},{"id":"Apparel_PsychicShockLance","label":"psychic shock lance","desc":"A limited-use psychic effector. It shocks the target's mind with chaotic images, blocking coherent perception and dropping them into a state of psychic shock. There is a risk of brain damage. It has a long range, but requires line of sight.","layers":["Belt"],"groups":["Waist"],"stuffCats":[],"count":0,"cost":{},"quality":false,"hp":80.0,"mass":0.5,"work":0,"mult":{"armor":0,"cold":0,"hot":0},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{},"research":[]},{"id":"Apparel_PsychicInsanityLance","label":"psychic insanity lance","desc":"A limited-use psychic effector. It overwhelms the target's mind with terrifying perceptual distortions, driving them into a berserk state. There is a risk of brain damage. It has a long range, but requires line of sight.","layers":["Belt"],"groups":["Waist"],"stuffCats":[],"count":0,"cost":{},"quality":false,"hp":80.0,"mass":0.5,"work":0,"mult":{"armor":0,"cold":0,"hot":0},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{},"research":[]},{"id":"Apparel_TribalA","label":"tribalwear","desc":"A full-body garment crafted using neolithic tools. While it may look primitive, it is effective at insulating the wearer.","layers":["OnSkin"],"groups":["Torso","Legs"],"stuffCats":["Fabric","Leathery"],"count":60,"cost":{},"quality":true,"hp":100.0,"mass":0.5,"work":1800.0,"mult":{"armor":0.2,"cold":0.55,"hot":0.55},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{},"research":[]},{"id":"Apparel_Parka","label":"parka","desc":"A parka for staying warm in even the coldest of temperatures.","layers":["Shell"],"groups":["Torso","Neck","Shoulders","Arms"],"stuffCats":["Fabric","Leathery"],"count":80,"cost":{},"quality":true,"hp":180.0,"mass":2.0,"work":8000.0,"mult":{"armor":0.2,"cold":2.0,"hot":0.0},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{},"research":[]},{"id":"Apparel_Pants","label":"pants","desc":"A simple set of pants.","layers":["OnSkin"],"groups":["Legs"],"stuffCats":["Fabric","Leathery"],"count":40,"cost":{},"quality":true,"hp":100.0,"mass":0.5,"work":1600.0,"mult":{"armor":0.2,"cold":0.2,"hot":0.08},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{},"research":["ComplexClothing"]},{"id":"Apparel_BasicShirt","label":"T-shirt","desc":"A simple T-shirt.","layers":["OnSkin"],"groups":["Torso","Shoulders"],"stuffCats":["Fabric","Leathery"],"count":40,"cost":{},"quality":true,"hp":100.0,"mass":0.25,"work":1600.0,"mult":{"armor":0.2,"cold":0.22,"hot":0.1},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{},"research":["ComplexClothing"]},{"id":"Apparel_CollarShirt","label":"button-down shirt","desc":"A nice-looking collared shirt with buttons.","layers":["OnSkin"],"groups":["Torso","Neck","Shoulders","Arms"],"stuffCats":["Fabric","Leathery"],"count":45,"cost":{},"quality":true,"hp":100.0,"mass":0.3,"work":2700.0,"mult":{"armor":0.2,"cold":0.26,"hot":0.1},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{},"research":["ComplexClothing"]},{"id":"Apparel_Duster","label":"duster","desc":"A long duster coat for blocking the sun and grit of the outdoors.","layers":["Shell"],"groups":["Torso","Neck","Shoulders","Arms","Legs"],"stuffCats":["Fabric","Leathery"],"count":80,"cost":{},"quality":true,"hp":200.0,"mass":2.0,"work":10000.0,"mult":{"armor":0.3,"cold":0.6,"hot":0.85},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{"SlaveSuppressionOffset":-0.05},"research":["ComplexClothing"]},{"id":"Apparel_Jacket","label":"jacket","desc":"A tough jacket to stop scrapes and bruises, and to keep one warm in chilly weather.","layers":["Shell"],"groups":["Torso","Neck","Shoulders","Arms"],"stuffCats":["Fabric","Leathery"],"count":70,"cost":{},"quality":true,"hp":160.0,"mass":1.7,"work":7000.0,"mult":{"armor":0.3,"cold":0.8,"hot":0.3},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{},"research":["ComplexClothing"]},{"id":"Apparel_PlateArmor","label":"plate armor","desc":"Overlapping solid plates of armor covering the entire body from neck to feet.","layers":["Middle","Shell"],"groups":["Torso","Neck","Shoulders","Arms","Legs"],"stuffCats":["Metallic","Woody"],"count":170,"cost":{},"quality":true,"hp":290.0,"mass":15.0,"work":38000.0,"mult":{"armor":0.9,"cold":1.0,"hot":0.0},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{"MoveSpeed":-0.8},"research":["PlateArmor"]},{"id":"Apparel_FlakVest","label":"flak vest","desc":"A vest with armor plates inserted on the chest and back. While quite effective at deflecting gunshots and stabbing attacks against the chest, it does nothing to protect the limbs.","layers":["Middle"],"groups":["Torso","Neck"],"stuffCats":[],"count":0,"cost":{"Cloth":30,"Steel":60,"ComponentIndustrial":1},"quality":true,"hp":200.0,"mass":4.0,"work":9000.0,"mult":{"armor":0,"cold":0,"hot":0},"base":{"sharp":1.0,"blunt":0.36,"heat":0.27,"cold":1.0,"hot":0,"shield":0},"equipped":{"MoveSpeed":-0.12},"research":["FlakArmor"]},{"id":"Apparel_FlakPants","label":"flak pants","desc":"A pair of pants with armor plates sewn in. While it's not as good as solid armor, it offers effective protection against all manner of attacks while remaining quite comfortable.","layers":["OnSkin","Middle"],"groups":["Legs"],"stuffCats":[],"count":0,"cost":{"Cloth":30,"Steel":60,"ComponentIndustrial":1},"quality":true,"hp":200.0,"mass":4.0,"work":9000.0,"mult":{"armor":0,"cold":0,"hot":0},"base":{"sharp":0.55,"blunt":0.08,"heat":0.1,"cold":3.5,"hot":1.0,"shield":0},"equipped":{"MoveSpeed":-0.12},"research":["FlakArmor"]},{"id":"Apparel_FlakJacket","label":"flak jacket","desc":"A tough fabric jacket with armor plates sewn in. While it's not as good as solid armor, it offers effective protection against all manner of attacks while remaining quite comfortable.","layers":["Shell"],"groups":["Torso","Neck","Shoulders","Arms"],"stuffCats":[],"count":0,"cost":{"Cloth":50,"Steel":70,"ComponentIndustrial":1},"quality":true,"hp":200.0,"mass":7.0,"work":14000.0,"mult":{"armor":0,"cold":0,"hot":0},"base":{"sharp":0.55,"blunt":0.08,"heat":0.1,"cold":14.4,"hot":3.0,"shield":0},"equipped":{"MoveSpeed":-0.12},"research":["FlakArmor"]},{"id":"Apparel_PowerArmor","label":"marine armor","desc":"A suit of powered armor. Layered plasteel-weave plates are very effective at stopping attacks, with few vulnerable joint sections. Neuro-memetic assistors allow a human to wear the armor and still move easily.\\n\\nArmor like this is often used by rapid-incursion space marines.","layers":["Middle","Shell"],"groups":["Torso","Neck","Shoulders","Arms","Legs"],"stuffCats":[],"count":0,"cost":{"ComponentSpacer":4,"Plasteel":100,"Uranium":20},"quality":true,"hp":340.0,"mass":12.0,"work":60000.0,"mult":{"armor":0,"cold":0,"hot":0},"base":{"sharp":1.06,"blunt":0.45,"heat":0.54,"cold":68.0,"hot":10.0,"shield":0},"equipped":{"MoveSpeed":-0.25,"SlaveSuppressionOffset":-0.3,"VacuumResistance":0.3},"research":["PoweredArmor"]},{"id":"Apparel_ArmorRecon","label":"recon armor","desc":"A suit of light partially-powered armor, designed to permit quick movement. Lightweight plasteel-weave plates block attacks without compromising mobility, and neuro-memetic assistors in the lower body allow a human to wear the armor and still move easily.\\n\\nArmor like this is often used by imperial scout troops and glitterworld police forces.","layers":["Middle","Shell"],"groups":["Torso","Neck","Shoulders","Arms","Legs"],"stuffCats":[],"count":0,"cost":{"ComponentSpacer":3,"Plasteel":80,"Uranium":10},"quality":true,"hp":280.0,"mass":9.0,"work":45000.0,"mult":{"armor":0,"cold":0,"hot":0},"base":{"sharp":0.92,"blunt":0.4,"heat":0.46,"cold":64.0,"hot":9.0,"shield":0},"equipped":{"SlaveSuppressionOffset":-0.3,"VacuumResistance":0.3},"research":["ReconArmor"]},{"id":"Apparel_Cape","label":"cape","desc":"A long cape of elegant design. It hangs over one side of the torso.","layers":["Shell"],"groups":["Torso","Neck","Shoulders","Arms","Legs"],"stuffCats":["Fabric","Leathery"],"count":80,"cost":{},"quality":true,"hp":200.0,"mass":2.0,"work":16000.0,"mult":{"armor":0.3,"cold":0.6,"hot":0.85},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{},"research":[]},{"id":"Apparel_Robe","label":"robe","desc":"A long, flowing robe without a hood.","layers":["Shell"],"groups":["Torso","Shoulders","Arms","Legs"],"stuffCats":["Fabric","Leathery"],"count":80,"cost":{},"quality":true,"hp":100.0,"mass":0.75,"work":5000.0,"mult":{"armor":0.2,"cold":0.8,"hot":0.25},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{},"research":[]},{"id":"OrbitalTargeterBombardment","label":"orbital bombardment targeter","desc":"An ancient targeting apparatus for an orbital bombardment system. This unit designates a target and transmits the coordinates to a network of satellites, which then bombard the target area with kinetic impactors. This unit has been reprogrammed to accept unauthorized users, but once it is used, the network will detect the incursion and cut off the link permanently.","layers":["Belt"],"groups":["Waist"],"stuffCats":[],"count":0,"cost":{},"quality":false,"hp":100.0,"mass":0.2,"work":0,"mult":{"armor":0,"cold":0,"hot":0},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{},"research":[]},{"id":"OrbitalTargeterPowerBeam","label":"orbital power beam targeter","desc":"An ancient targeting unit for a network of power-collection satellites. Once aimed at a target, it directs ancient satellites to begin beaming power down in a massive column of electromagnetic energy. This power can safely be collected in a giant absorption dish. Since you have no absorption dish, you'll be aiming it at enemies, at which point the power column will turn the area into a thousand-degree inferno. This will last until the satellites detect the unsafe targeting, shut themselves down, and permanently deactivate the targeter.","layers":["Belt"],"groups":["Waist"],"stuffCats":[],"count":0,"cost":{},"quality":false,"hp":100.0,"mass":0.2,"work":0,"mult":{"armor":0,"cold":0,"hot":0},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{},"research":[]},{"id":"TornadoGenerator","label":"tornado generator","desc":"An ancient control unit for a network of weather-control satellites. This device has had certain failsafes bypassed; it is capable of causing a massive air current disturbance, which will generate a tornado at a chosen location. The weather network will detect this unauthorized intrusion and lock out the device after use, but the tornado will be left to spend its energy normally.","layers":["Belt"],"groups":["Waist"],"stuffCats":[],"count":0,"cost":{},"quality":false,"hp":100.0,"mass":0.2,"work":0,"mult":{"armor":0,"cold":0,"hot":0},"base":{"sharp":0,"blunt":0,"heat":0,"cold":0,"hot":0,"shield":0},"equipped":{},"research":[]}]};
@@ -167,10 +227,10 @@ const DATA = {"stuffs":[{"id":"Silver","label":"silver","cats":["Metallic"],"sha
 const QUALITIES = ['Awful','Poor','Normal','Good','Excellent','Masterwork','Legendary'];
 const Q_ARMOR = [0.60,0.80,1.00,1.15,1.30,1.45,1.80];   // ArmorRatingBase StatPart_Quality
 const Q_INSUL = [0.8,0.9,1.0,1.1,1.2,1.5,1.8];          // InsulationBase StatPart_Quality
-const ARMOR_MAX = 2;                                     // ArmorRatingBase maxValue
+const ARMOR_MAX = 2;
 const HUMAN = { comfyMin:16, comfyMax:26, move:4.6 };
 const LAYER_NAMES = { OnSkin:'Skin', Middle:'Middle', Shell:'Outer', Belt:'Utility', Overhead:'Headgear' };
-const LAYER_ORDER = { OnSkin:0, Middle:1, Shell:2, Belt:3, Overhead:4 };  // drawOrder, outermost = highest
+const LAYER_ORDER = { OnSkin:0, Middle:1, Shell:2, Belt:3, Overhead:4 };
 const PICK_GROUPS = [
   ['Headgear', a => a.layers.includes('Overhead')],
   ['Outer',    a => a.layers.includes('Shell')],
@@ -178,7 +238,6 @@ const PICK_GROUPS = [
   ['Skin',     a => a.layers.includes('OnSkin') && !a.layers.includes('Middle')],
   ['Utility',  a => a.layers.includes('Belt')],
 ];
-// body part groups -> real parts (from Bodies_Humanlike.xml), used for layer conflicts like the game does
 const GROUP_PARTS = {
   UpperHead:['Head','Skull','Brain','Ears'],
   FullHead:['Head','Skull','Brain','Ears','Eyes','Nose','Jaw','Tongue'],
@@ -186,28 +245,29 @@ const GROUP_PARTS = {
   Torso:['Torso'], Neck:['Neck'], Shoulders:['Shoulders'], Arms:['Arms'], Legs:['Legs'], Waist:['Waist'],
   Hands:['Hands'], Feet:['Feet']
 };
+// [label, groups that protect it, share of random hits (human body part coverage, organs folded into their region)]
 const REGIONS = [
-  ['Head', ['UpperHead','FullHead']],
-  ['Eyes',                ['FullHead','Eyes']],
-  ['Jaw/nose',          ['FullHead','Mouth','Teeth']],
-  ['Neck',                ['Neck']],
-  ['Torso',               ['Torso']],
-  ['Shoulders',           ['Shoulders']],
-  ['Arms',                ['Arms']],
-  ['Legs',                ['Legs']],
-  ['Hands',               ['Hands']],
-  ['Feet',                ['Feet']],
+  ['Head',      ['UpperHead','FullHead'], .036],
+  ['Eyes',      ['FullHead','Eyes'],      .008],
+  ['Jaw/nose',  ['FullHead','Mouth','Teeth'], .009],
+  ['Neck',      ['Neck'],      .015],
+  ['Torso',     ['Torso'],     .427],
+  ['Shoulders', ['Shoulders'], .034],
+  ['Arms',      ['Arms'],      .159],
+  ['Legs',      ['Legs'],      .252],
+  ['Hands',     ['Hands'],     .026],
+  ['Feet',      ['Feet'],      .028],
 ];
 const STAT_LABELS = {
   MoveSpeed:['Move speed',v=>sign(v.toFixed(2))+' c/s'],
   SocialImpact:['Social impact',pctS], SlaveSuppressionOffset:['Slave suppression',pctS],
-  PainShockThreshold:['Pain shock threshold',pctS], ToxicEnvironmentResistance:['Toxic env. resistance',pctS],
+  PainShockThreshold:['Pain shock threshold',pctS], ToxicEnvironmentResistance:['Toxic resistance',pctS],
   PsychicSensitivity:['Psychic sensitivity',pctS], VacuumResistance:['Vacuum resistance',pctS],
 };
-// Projectile AP = armorPenetrationBase, or damage × 0.015 when unset (game default)
+// projectile AP = armorPenetrationBase, or damage × 0.015 when unset (game default)
 const WEAPONS = [
   ['custom','Custom AP…', 'Sharp', null],
-  ['none','No AP (raw armor)', 'Sharp', 0],
+  ['none','Sharp, no AP', 'Sharp', 0],
   ['Machine pistol', 'Machine pistol', 'Sharp', 6*0.015],
   ['Autopistol', 'Autopistol', 'Sharp', 10*0.015],
   ['Minigun', 'Minigun', 'Sharp', 10*0.015],
@@ -235,10 +295,10 @@ const RESTRICTED = new Set(['Gold','Silver','Plasteel','Uranium','Jade']);
 function stuffsFor(a){ return DATA.stuffs.filter(s => s.cats.some(c => a.stuffCats.includes(c))); }
 function defaultStuff(a){
   const list = stuffsFor(a); if(!list.length) return null;
-  const pref = ['Cloth','Steel','WoodLog','Leather_Plain'];
-  for(const p of pref) if(list.find(s=>s.id===p)) return p;
+  for(const p of ['Cloth','Steel','WoodLog','Leather_Plain']) if(list.find(s=>s.id===p)) return p;
   return list[0].id;
 }
+const catName = c => ({Leathery:'Leather',Woody:'Wood',Metallic:'Metal'}[c] || c);
 
 /* ---------- stat math (mirrors StatPart_Stuff + StatPart_Quality) ---------- */
 function stats(a, stuffId, q){
@@ -247,39 +307,76 @@ function stats(a, stuffId, q){
   const m = a.mult, b = a.base;
   const arm = (base, pow) => Math.min(ARMOR_MAX, Math.max(0, (base + (s ? pow*m.armor : 0)) * qa));
   return {
-    sharp: arm(b.sharp, s && s.sharp),
-    blunt: arm(b.blunt, s && s.blunt),
-    heat:  arm(b.heat,  s && s.heat),
-    cold:  (b.cold + (s ? s.cold*m.cold : 0)) * qi,
-    hot:   (b.hot  + (s ? s.hot*m.hot  : 0)) * qi,
-    hp:    Math.round(a.hp * (s ? s.hpF : 1)),
-    work:  a.work ? a.work * (s ? s.workF : 1) : 0,
+    sharp: arm(b.sharp, s && s.sharp), blunt: arm(b.blunt, s && s.blunt), heat: arm(b.heat, s && s.heat),
+    cold: (b.cold + (s ? s.cold*m.cold : 0)) * qi,
+    hot:  (b.hot  + (s ? s.hot*m.hot  : 0)) * qi,
+    hp:   Math.round(a.hp * (s ? s.hpF : 1)),
+    work: a.work ? a.work * (s ? s.workF : 1) : 0,
   };
 }
-// expected fraction of damage that gets through one layer with effective armor A (wiki / game d100 roll)
 function passFrac(A){ A = Math.max(0, A); return Math.max(1-A,0) + (Math.min(A,1) - A/2)/2; }
 function deflectChance(A){ A = Math.max(0, A); return Math.min(A/2, 1); }
+const armorKey = t => t==='Sharp'?'sharp':t==='Blunt'?'blunt':'heat';
+const outerLayer = a => Math.max(...a.layers.map(l=>LAYER_ORDER[l]));
+
+// worn: [{a, st}] → per region expected damage share & full-block chance
+function regionDamage(worn, type, ap){
+  const k = armorKey(type);
+  return REGIONS.map(([name, groups, weight])=>{
+    const layers = worn.filter(x=>x.a.groups.some(g=>groups.includes(g)) && (x.st.sharp>0||x.st.blunt>0||x.st.heat>0))
+                       .sort((x,y)=>outerLayer(y.a)-outerLayer(x.a));
+    let pass = 1, noBlock = 1;
+    for(const x of layers){ const A = x.st[k]-ap; pass *= passFrac(A); noBlock *= 1-deflectChance(A); }
+    return {name, weight, layers, pass, block:1-noBlock};
+  });
+}
+function avgPass(worn, type, ap){
+  const r = regionDamage(worn, type, ap);
+  return r.reduce((s,x)=>s+x.weight*x.pass,0) / r.reduce((s,x)=>s+x.weight,0);
+}
+function outfitTotals(worn, w){
+  let cold=0, hot=0, mass=0; const eq = {};
+  for(const {a,st} of worn){ cold+=st.cold; hot+=st.hot; mass+=a.mass; for(const [k,v] of Object.entries(a.equipped)) eq[k]=(eq[k]||0)+v; }
+  const regions = regionDamage(worn, w.type, w.ap);
+  const avgDmg = regions.reduce((s,r)=>s+r.weight*r.pass,0) / regions.reduce((s,r)=>s+r.weight,0);
+  return { cold, hot, mass, eq, tmin:HUMAN.comfyMin-cold, tmax:HUMAN.comfyMax+hot, move:HUMAN.move+(eq.MoveSpeed||0), regions, avgDmg };
+}
 
 /* ---------- state ---------- */
 let state = { items:[], focus:null, weapon:'Assault rifle', customAP:0.20, sort:{key:'sharp',dir:-1},
-              cats:{}, showRestricted:true };
+              cats:{}, showRestricted:true, presetQ:2, presetRes:false, presetTab:'popular', outfitName:'' };
+let saved = [];
+let hadStorage = false;
 function uid(){ return Math.random().toString(36).slice(2,9); }
-
 function load(){
-  try{
-    const h = decodeURIComponent(location.hash.slice(1));
-    if(h){ const o = JSON.parse(atob(h)); if(Array.isArray(o.i)){ state.items = o.i.filter(x=>APP[x[0]]).map(x=>({uid:uid(),id:x[0],stuff:x[1]&&STUFF[x[1]]?x[1]:defaultStuff(APP[x[0]]),q:x[2]??2})); if(o.w) state.weapon=o.w; return; } }
-  }catch(e){}
+  try{ saved = JSON.parse(localStorage.getItem('rw-apparel-planner-saved') || '[]') || []; }catch(e){ saved = []; }
   try{
     const o = JSON.parse(localStorage.getItem('rw-apparel-planner') || 'null');
-    if(o){ Object.assign(state, {weapon:o.weapon||state.weapon, customAP:o.customAP??state.customAP, showRestricted:o.showRestricted??true});
-           state.items = (o.items||[]).filter(x=>APP[x.id]).map(x=>({...x, uid:uid()})); }
+    if(o){ hadStorage = true;
+           for(const k of ['weapon','customAP','showRestricted','presetQ','presetRes','presetTab','outfitName']) if(o[k]!==undefined) state[k]=o[k];
+           state.items = toItems((o.items||[]).map(x=>[x.id,x.stuff,x.q])); }
+  }catch(e){}
+  try{
+    const h = decodeURIComponent(location.hash.slice(1));
+    if(h){ const o = JSON.parse(atob(h)); if(Array.isArray(o.i)){ hadStorage = true; state.items = toItems(o.i); if(o.w) state.weapon=o.w; state.outfitName = o.n || ''; } }
   }catch(e){}
 }
 function save(){
-  try{ localStorage.setItem('rw-apparel-planner', JSON.stringify({items:state.items.map(({id,stuff,q})=>({id,stuff,q})), weapon:state.weapon, customAP:state.customAP, showRestricted:state.showRestricted})); }catch(e){}
-  try{ const enc = btoa(JSON.stringify({i:state.items.map(x=>[x.id,x.stuff,x.q]), w:state.weapon}));
-       history.replaceState(null,'','#'+enc); }catch(e){}
+  const {weapon,customAP,showRestricted,presetQ,presetRes,presetTab,outfitName} = state;
+  try{ localStorage.setItem('rw-apparel-planner', JSON.stringify({items:state.items.map(({id,stuff,q})=>({id,stuff,q})), weapon,customAP,showRestricted,presetQ,presetRes,presetTab,outfitName})); }catch(e){}
+  try{ history.replaceState(null,'','#'+btoa(unescape(encodeURIComponent(JSON.stringify({i:compact(state.items), w:state.weapon, n:state.outfitName}))))); }catch(e){}
+}
+function saveSaved(){ try{ localStorage.setItem('rw-apparel-planner-saved', JSON.stringify(saved)); }catch(e){} }
+const compact = items => items.map(x=>[x.id,x.stuff,x.q]);
+function toItems(list){
+  const out = [];
+  for(const [id,st,q] of list){
+    const a = APP[id]; if(!a) continue;
+    const stuff = st && STUFF[st] && stuffsFor(a).some(m=>m.id===st) ? st : defaultStuff(a);
+    for(let i=out.length-1;i>=0;i--) if(conflicts(APP[out[i].id], a)) out.splice(i,1);
+    out.push({uid:uid(), id, stuff, q: Number.isInteger(q) ? q : 2});
+  }
+  return out;
 }
 
 /* ---------- helpers ---------- */
@@ -287,222 +384,327 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function sign(v){ return (+v>0?'+':'')+v; }
 function pct(v){ return (v*100).toFixed(1)+'%'; }
+function pct0(v){ return Math.round(v*100)+'%'; }
 function pctS(v){ return sign(Math.round(v*100))+'%'; }
-function deg(v){ return (v>=0?'+':'')+v.toFixed(1)+'°C'; }
+function deg(v){ return (v>=0?'+':'')+v.toFixed(1)+'°'; }
 function cap(s){ return s ? s[0].toUpperCase()+s.slice(1) : s; }
 function swatch(s){ return s ? `<span class="sw" style="background:${s.color}"></span>` : ''; }
 function weaponInfo(){
   const w = WEAPONS.find(x=>x[0]===state.weapon) || WEAPONS[6];
   return { key:w[0], label:w[1], type:w[2], ap: w[3]==null ? state.customAP : w[3] };
 }
-function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('on'),2200); }
+let undoSnap = null;
+function toast(msg, undo){
+  $('toastMsg').textContent = msg; $('toastUndo').hidden = !undo; undoSnap = undo || null;
+  const t=$('toast'); t.classList.add('on'); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('on'), undo?7000:2500);
+}
 function conflicts(a, b){
+  if(a===b) return true;
   if(!a.layers.some(l=>b.layers.includes(l))) return false;
   const pa = new Set(a.groups.flatMap(g=>GROUP_PARTS[g]||[g]));
   return b.groups.flatMap(g=>GROUP_PARTS[g]||[g]).some(p=>pa.has(p));
 }
+function itemName(id, stuff){ const a=APP[id]; return (stuff && STUFF[stuff] ? STUFF[stuff].label+' ' : '') + a.label; }
+const dmgColor = p => p<=.3?'var(--good)':p<=.55?'#c9cf6a':p<=.8?'var(--hot)':'var(--bad)';
 
 /* ---------- actions ---------- */
-function wear(id, stuff, q){
+function snapshot(){ return {items:compact(state.items), name:state.outfitName}; }
+function pickFocus(){
+  return (state.items.find(x=>APP[x.id].layers.includes('Shell') && stuffsFor(APP[x.id]).length)
+       || state.items.find(x=>stuffsFor(APP[x.id]).length) || state.items[0])?.uid ?? null;
+}
+function applyOutfit(list, name){
+  const snap = snapshot();
+  state.items = toItems(list); state.outfitName = name || '';
+  state.focus = pickFocus();
+  render(); toast('Wearing ' + (name || 'outfit'), snap);
+}
+function wear(id){
   const a = APP[id];
+  const snap = snapshot();
   const removed = state.items.filter(x => conflicts(APP[x.id], a));
   state.items = state.items.filter(x => !removed.includes(x));
-  const it = { uid:uid(), id, stuff: stuff!==undefined ? stuff : defaultStuff(a), q: q ?? 2 };
-  state.items.push(it);
-  state.focus = it.uid;
-  if(removed.length) toast('Replaced ' + removed.map(x=>APP[x.id].label).join(', '));
+  const it = { uid:uid(), id, stuff: defaultStuff(a), q: 2 };
+  state.items.push(it); state.focus = it.uid; state.outfitName = '';
+  if(removed.length) toast('Took off ' + removed.map(x=>APP[x.id].label).join(', '), snap);
   render();
 }
-function remove(u){ state.items = state.items.filter(x=>x.uid!==u); if(state.focus===u) state.focus = state.items.at(-1)?.uid ?? null; render(); }
+function remove(u){ state.items = state.items.filter(x=>x.uid!==u); if(state.focus===u) state.focus = state.items.at(-1)?.uid ?? null; state.outfitName=''; render(); }
 
-/* ---------- presets ---------- */
-const PRESETS = [
-  ['Tribal start', [['Apparel_TribalA','Leather_Plain'],['Apparel_TribalHeaddress','Cloth'],['Apparel_WarMask','WoodLog']]],
-  ['Early industrial', [['Apparel_CollarShirt','Cloth'],['Apparel_Pants','Cloth'],['Apparel_Duster','Leather_Plain'],['Apparel_CowboyHat','Cloth']]],
-  ['Mid-game soldier', [['Apparel_CollarShirt','DevilstrandCloth'],['Apparel_Pants','DevilstrandCloth'],['Apparel_FlakVest',null],['Apparel_Duster','DevilstrandCloth'],['Apparel_AdvancedHelmet','Steel']]],
-  ['Thrumbo tank', [['Apparel_CollarShirt','Hyperweave'],['Apparel_FlakPants',null],['Apparel_FlakVest',null],['Apparel_Duster','Leather_Thrumbo'],['Apparel_AdvancedHelmet','Plasteel']]],
-  ['Marine', [['Apparel_CollarShirt','Hyperweave'],['Apparel_Pants','Hyperweave'],['Apparel_PowerArmor',null],['Apparel_PowerArmorHelmet',null],['Apparel_ShieldBelt',null]]],
-  ['Arctic', [['Apparel_CollarShirt','WoolMegasloth'],['Apparel_Pants','WoolMegasloth'],['Apparel_Parka','Leather_Thrumbo'],['Apparel_Tuque','WoolMegasloth']]],
-  ['Desert', [['Apparel_TribalA','Leather_Camel'],['Apparel_Duster','DevilstrandCloth'],['Apparel_CowboyHat','Leather_Camel']]],
+/* ---------- presets: what players commonly wear (Core only) ---------- */
+const POPULAR = [
+  { cat:'Early game', stage:'Early', name:'Tribal start', desc:'What a tribal start can make right away at a crafting spot.',
+    items:[['Apparel_TribalA','Leather_Plain'],['Apparel_WarMask','WoodLog']] },
+  { cat:'Early game', stage:'Early', name:'Crashlanded basics', desc:'Cheap cloth shirt and pants with a leather duster. The usual first tailoring batch.',
+    items:[['Apparel_CollarShirt','Cloth'],['Apparel_Pants','Cloth'],['Apparel_Duster','Leather_Plain'],['Apparel_CowboyHat','Cloth']] },
+  { cat:'Early game', stage:'Early', name:'Early defender', desc:'Cloth basics, a leather jacket and a steel simple helmet for the first raids.',
+    items:[['Apparel_CollarShirt','Cloth'],['Apparel_Pants','Cloth'],['Apparel_Jacket','Leather_Plain'],['Apparel_SimpleHelmet','Steel']] },
+  { cat:'Early game', stage:'Early', name:'Medieval knight', desc:'Steel plate armor before you have flak research. Heavy and slow, but tough.',
+    items:[['Apparel_CollarShirt','Cloth'],['Apparel_Pants','Cloth'],['Apparel_PlateArmor','Steel'],['Apparel_SimpleHelmet','Steel']] },
+
+  { cat:'Mid game', stage:'Mid', name:'Flak trooper', desc:'The classic mid-game shooter: flak vest, flak pants and flak helmet under a duster.',
+    items:[['Apparel_CollarShirt','Synthread'],['Apparel_FlakPants',null],['Apparel_FlakVest',null],['Apparel_Duster','Leather_Plain'],['Apparel_AdvancedHelmet','Steel']] },
+  { cat:'Mid game', stage:'Mid', name:'Devilstrand standard', desc:'A community favourite: devilstrand everywhere with a flak vest. Good fire protection too.',
+    items:[['Apparel_CollarShirt','DevilstrandCloth'],['Apparel_Pants','DevilstrandCloth'],['Apparel_FlakVest',null],['Apparel_Duster','DevilstrandCloth'],['Apparel_AdvancedHelmet','Plasteel']] },
+  { cat:'Mid game', stage:'Mid', name:'Thrumbo tank', desc:'Thrumbofur duster over a flak vest. Per the wiki, the highest sharp protection on the torso.',
+    items:[['Apparel_CollarShirt','Hyperweave'],['Apparel_FlakPants',null],['Apparel_FlakVest',null],['Apparel_Duster','Leather_Thrumbo'],['Apparel_AdvancedHelmet','Plasteel']] },
+  { cat:'Mid game', stage:'Mid', name:'Fast flanker', desc:'No speed penalties at all, using only the strongest fabric and leather.',
+    items:[['Apparel_CollarShirt','Hyperweave'],['Apparel_Pants','Hyperweave'],['Apparel_Duster','Leather_Thrumbo'],['Apparel_AdvancedHelmet','Plasteel']] },
+
+  { cat:'Late game', stage:'Late', name:'Marine', desc:'Marine armor and helmet over hyperweave basics. The standard late-game shooter.',
+    items:[['Apparel_CollarShirt','Hyperweave'],['Apparel_Pants','Hyperweave'],['Apparel_PowerArmor',null],['Apparel_PowerArmorHelmet',null]] },
+  { cat:'Late game', stage:'Late', name:'Recon melee + shield', desc:'Recon armor has no speed penalty. The shield belt is for melee only, since it blocks your own shots.',
+    items:[['Apparel_CollarShirt','Hyperweave'],['Apparel_Pants','Hyperweave'],['Apparel_ArmorRecon',null],['Apparel_ArmorHelmetRecon',null],['Apparel_ShieldBelt',null]] },
+  { cat:'Late game', stage:'Late', name:'Marine with smoke', desc:'Marine kit plus a smokepop pack to cut enemy accuracy when you need to close in.',
+    items:[['Apparel_CollarShirt','Hyperweave'],['Apparel_Pants','Hyperweave'],['Apparel_PowerArmor',null],['Apparel_PowerArmorHelmet',null],['Apparel_SmokepopBelt',null]] },
+
+  { cat:'Jobs and climates', stage:'Role', name:'Arctic worker', desc:'Muffalo wool parka and tuque. What most ice sheet and tundra colonies end up with.',
+    items:[['Apparel_CollarShirt','WoolMuffalo'],['Apparel_Pants','WoolMuffalo'],['Apparel_Parka','WoolMuffalo'],['Apparel_Tuque','WoolMuffalo']] },
+  { cat:'Jobs and climates', stage:'Role', name:'Desert worker', desc:'Light cloth basics, a camelhide duster for heat and a cowboy hat.',
+    items:[['Apparel_CollarShirt','Cloth'],['Apparel_Pants','Cloth'],['Apparel_Duster','Leather_Camel'],['Apparel_CowboyHat','Leather_Camel']] },
+  { cat:'Jobs and climates', stage:'Role', name:'Trader and warden', desc:'The hood gives the most social impact of any hat (+20%). Good for negotiating and recruiting.',
+    items:[['Apparel_CollarShirt','Synthread'],['Apparel_Pants','Synthread'],['Apparel_Duster','DevilstrandCloth'],['Apparel_HatHood','DevilstrandCloth']] },
+  { cat:'Jobs and climates', stage:'Role', name:'Firefighter', desc:'Devilstrand for heat armor and a firefoam pop pack for putting out fires.',
+    items:[['Apparel_CollarShirt','DevilstrandCloth'],['Apparel_Pants','DevilstrandCloth'],['Apparel_Duster','DevilstrandCloth'],['Apparel_HatHood','DevilstrandCloth'],['Apparel_FirefoampopPack',null]] },
+  { cat:'Jobs and climates', stage:'Role', name:'Toxic fallout worker', desc:'A face mask (+50% toxic resistance) fits under a hat, for working outside during fallout.',
+    items:[['Apparel_CollarShirt','Cloth'],['Apparel_Pants','Cloth'],['Apparel_Jacket','Leather_Plain'],['Apparel_ClothMask','Cloth'],['Apparel_CowboyHat','Cloth']] },
+  { cat:'Jobs and climates', stage:'Role', name:'Psychic drone shield', desc:'The psychic foil helmet cuts psychic sensitivity by 90%, for riding out psychic drones.',
+    items:[['Apparel_CollarShirt','DevilstrandCloth'],['Apparel_Pants','DevilstrandCloth'],['Apparel_Duster','DevilstrandCloth'],['Apparel_PsychicFoilHelmet',null]] },
 ];
+
+/* ---------- presets: computed best outfits ---------- */
+// Each goal picks the best material per item, then tries every valid combination of items.
+const OBJECTIVES = [
+  { cat:'Protection', name:'Best sharp protection', desc:'Least damage from the selected sharp weapon, weighted by how often each body part gets hit.',
+    mat:st=>st.sharp, score:t=>-t.dmg.Sharp, kpi:'dmg' },
+  { cat:'Protection', name:'Best sharp, full speed', desc:'Same, using only items with no move speed penalty.',
+    filter:a=>!(a.equipped.MoveSpeed<0), mat:st=>st.sharp, score:t=>-t.dmg.Sharp, kpi:'dmg' },
+  { cat:'Protection', name:'Best blunt protection', desc:'Against fists, clubs, maces and falling rocks (no AP).',
+    mat:st=>st.blunt, score:t=>-t.dmg.Blunt, kpi:'blunt' },
+  { cat:'Protection', name:'Best fire protection', desc:'Most heat armor against fire and burns.',
+    mat:st=>st.heat, score:t=>-t.dmg.Heat, kpi:'fire' },
+  { cat:'Protection', name:'Best all-round armor', desc:'Weighs sharp (vs selected weapon), blunt and fire damage equally.',
+    mat:st=>st.sharp+st.blunt+st.heat, score:t=>-(t.dmg.Sharp+t.dmg.Blunt+t.dmg.Heat), kpi:'dmg' },
+  { cat:'Temperature', name:'Coldest survivable', desc:'Most cold insulation possible, for ice sheets and winters.',
+    mat:st=>st.cold, score:t=>t.cold, kpi:'temp' },
+  { cat:'Temperature', name:'Hottest survivable', desc:'Most heat insulation possible, for deserts and heat waves.',
+    mat:st=>st.hot, score:t=>t.hot, kpi:'temp' },
+  { cat:'Temperature', name:'Widest comfort range', desc:'Lots of cold and heat insulation at once, for biomes with harsh seasons both ways.',
+    mat:st=>st.cold+st.hot, score:t=>t.cold+t.hot - Math.abs(t.cold-t.hot)*0.25, kpi:'temp' },
+  { cat:'Temperature', name:'Cold, still armored', desc:'Cold insulation first, with sharp protection a close second.',
+    mat:st=>st.cold/60+st.sharp, score:t=>t.cold/60 - t.dmg.Sharp, kpi:'temp' },
+  { cat:'Special stats', name:'Best social impact', desc:'For your negotiator or warden. Ties go to sharp protection.',
+    mat:st=>st.sharp, score:t=>(t.eq.SocialImpact||0) - t.dmg.Sharp*0.01, kpi:'social' },
+  { cat:'Special stats', name:'Highest pain tolerance', desc:'Most pain shock threshold, so pawns keep fighting longer.',
+    mat:st=>st.sharp, score:t=>(t.eq.PainShockThreshold||0) - t.dmg.Sharp*0.01, kpi:'pain' },
+  { cat:'Special stats', name:'Toxic resistance', desc:'Most toxic environment resistance for fallout and polluted areas.',
+    mat:st=>st.sharp, score:t=>(t.eq.ToxicEnvironmentResistance||0) - t.dmg.Sharp*0.01, kpi:'tox' },
+];
+function optimize(obj, q, allowRes, w){
+  const sharpAP = w.type==='Sharp' ? w.ap : 0.165;
+  const cands = [];
+  for(const a of DATA.apparel){
+    if(a.layers.includes('Belt')) continue;
+    if(obj.filter && !obj.filter(a)) continue;
+    const mats = stuffsFor(a).filter(m=>allowRes || !RESTRICTED.has(m.id));
+    if(a.stuffCats.length && !mats.length) continue;
+    let stuff = null;
+    if(mats.length){ let best=-Infinity; for(const m of mats){ const v = obj.mat(stats(a,m.id,q)); if(v>best+1e-9){best=v;stuff=m.id;} } }
+    cands.push({a, stuff, st:stats(a,stuff,q)});
+  }
+  const n = cands.length;
+  const clash = cands.map(x=>cands.map(y=>x!==y && conflicts(x.a,y.a)));
+  const evalSet = set=>{
+    const worn = set.map(i=>cands[i]);
+    // never naked: torso and legs covered
+    if(!worn.some(x=>x.a.groups.includes('Torso')) || !worn.some(x=>x.a.groups.includes('Legs'))) return -Infinity;
+    const t = outfitTotals(worn, w);
+    t.dmg = { Sharp: avgPass(worn,'Sharp',sharpAP), Blunt: avgPass(worn,'Blunt',0), Heat: avgPass(worn,'Heat',0) };
+    return obj.score(t) - set.length*1e-4 - t.mass*1e-5;
+  };
+  let best = -Infinity, bestSet = [];
+  const cur = [];
+  (function rec(i){
+    if(i===n){ const s = evalSet(cur); if(s>best){best=s;bestSet=[...cur];} return; }
+    if(!cur.some(j=>clash[i][j])){ cur.push(i); rec(i+1); cur.pop(); }
+    rec(i+1);
+  })(0);
+  return bestSet.map(i=>[cands[i].a.id, cands[i].stuff]).sort((x,y)=>outerLayer(APP[x[0]])-outerLayer(APP[y[0]]));
+}
 
 /* ---------- render: picker ---------- */
 function renderPicker(){
   const q = $('search').value.trim().toLowerCase();
   const wornIds = new Set(state.items.map(x=>x.id));
-  let html = '';
-  const used = new Set();
+  let html = ''; const used = new Set();
   for(const [name, test] of PICK_GROUPS){
     const list = DATA.apparel.filter(a => !used.has(a.id) && test(a)).sort((x,y)=>x.label.localeCompare(y.label));
     list.forEach(a=>used.add(a.id));
-    const shown = list.filter(a => !q || a.label.toLowerCase().includes(q) || a.groups.join(' ').toLowerCase().includes(q));
+    const shown = list.filter(a => !q || a.label.toLowerCase().includes(q) || name.toLowerCase().includes(q) || a.groups.join(' ').toLowerCase().includes(q));
     if(!shown.length) continue;
-    html += `<div class="grp"><div class="grp-h">${name}</div>`;
+    html += `<div class="grp-h">${name}</div>`;
     for(const a of shown){
       const worn = wornIds.has(a.id);
-      const mat = a.stuffCats.length ? a.stuffCats.map(c=>c==='Leathery'?'Leather':c==='Woody'?'Wood':c==='Metallic'?'Metal':c).join('/') : 'fixed';
-      html += `<div class="it${worn?' worn':''}" data-id="${a.id}" title="${esc(a.desc)}">
+      const mat = a.stuffCats.length ? a.stuffCats.map(catName).join(' / ') : 'fixed recipe';
+      html += `<div class="it${worn?' worn':''}" data-id="${a.id}" title="${esc(a.desc)}&#10;&#10;Covers: ${a.groups.join(', ')}">
         <span class="nm">${esc(cap(a.label))}</span><span class="tag">${mat}</span><span class="add">${worn?'✓':'+'}</span></div>`;
     }
-    html += `</div>`;
   }
   $('itemList').innerHTML = html || '<div class="empty">No matches.</div>';
 }
 
-/* ---------- render: loadout ---------- */
+/* ---------- render: outfit ---------- */
+function qualitySelect(it){
+  return APP[it.id].quality
+    ? `<select data-k="q" data-u="${it.uid}" aria-label="Quality">${QUALITIES.map((n,i)=>`<option value="${i}"${i===it.q?' selected':''}>${n}</option>`).join('')}</select>`
+    : `<select disabled><option>No quality</option></select>`;
+}
 function renderLoadout(){
   const el = $('loadout');
-  if(!state.items.length){ el.innerHTML = '<div class="empty">Nothing worn. Pick apparel on the left, or start from a preset.</div>'; return; }
-  const sorted = [...state.items].sort((x,y)=> Math.max(...APP[y.id].layers.map(l=>LAYER_ORDER[l])) - Math.max(...APP[x.id].layers.map(l=>LAYER_ORDER[l])));
+  $('outfitName').textContent = state.outfitName ? '· ' + state.outfitName : '';
+  if(!state.items.length){ el.innerHTML = '<div class="empty">Nothing worn yet. Add apparel from the list on the left, or open <b>Presets</b> at the top.</div>'; return; }
+  const sorted = [...state.items].sort((x,y)=> outerLayer(APP[y.id]) - outerLayer(APP[x.id]));
   el.innerHTML = sorted.map(it=>{
     const a = APP[it.id], st = stats(a, it.stuff, it.q), s = it.stuff && STUFF[it.stuff];
     const mats = stuffsFor(a);
-    const matSel = mats.length ? `<select data-k="stuff" data-u="${it.uid}">${
-      mats.slice().sort((x,y)=>x.label.localeCompare(y.label)).map(m=>`<option value="${m.id}"${m.id===it.stuff?' selected':''}>${esc(m.label)}${RESTRICTED.has(m.id)?' ⚑':''}</option>`).join('')}</select>`
+    const matSel = mats.length ? `<select data-k="stuff" data-u="${it.uid}" aria-label="Material">${
+      mats.slice().sort((x,y)=>x.label.localeCompare(y.label)).map(m=>`<option value="${m.id}"${m.id===it.stuff?' selected':''}>${esc(cap(m.label))}${RESTRICTED.has(m.id)?' ⚑':''}</option>`).join('')}</select>`
       : `<select disabled><option>Fixed recipe</option></select>`;
-    const qSel = a.quality ? `<select data-k="q" data-u="${it.uid}">${QUALITIES.map((n,i)=>`<option value="${i}"${i===it.q?' selected':''}>${n}</option>`).join('')}</select>` : `<select disabled><option>No quality</option></select>`;
     return `<div class="slot${state.focus===it.uid?' focus':''}" data-u="${it.uid}">
-      <div class="top">${swatch(s)}<b>${esc(cap(a.label))}</b>
-        <span class="layers">${a.layers.map(l=>LAYER_NAMES[l]).join(' + ')} · ${a.groups.join(', ')}</span>
-        <span style="flex:1"></span><button class="btn ghost sm" data-del="${it.uid}" title="Take off">✕</button></div>
-      <div class="row">${matSel}${qSel}</div>
-      <div class="stats">
-        <span title="Armor - Sharp" style="color:var(--sharp)">S ${pct(st.sharp)}</span>
-        <span title="Armor - Blunt" style="color:var(--blunt)">B ${pct(st.blunt)}</span>
-        <span title="Armor - Heat" style="color:var(--heatA)">H ${pct(st.heat)}</span>
-        <span title="Insulation - Cold" style="color:var(--cold)">❄ ${deg(st.cold)}</span>
-        <span title="Insulation - Heat" style="color:var(--hot)">☀ ${deg(st.hot)}</span>
+      <div class="top">${swatch(s)}<b>${esc(cap(a.label))}</b><span style="flex:1"></span><button class="btn ghost sm" data-del="${it.uid}" title="Take off" aria-label="Take off ${esc(a.label)}">✕</button></div>
+      <div class="layers">${a.layers.map(l=>LAYER_NAMES[l]).join(' + ')} layer · ${a.groups.join(', ')}</div>
+      <div class="row">${matSel}${qualitySelect(it)}</div>
+      <div class="mini">
+        <div><i>Sharp</i><b style="color:var(--sharp)">${pct0(st.sharp)}</b></div>
+        <div><i>Blunt</i><b style="color:var(--blunt)">${pct0(st.blunt)}</b></div>
+        <div><i>Heat</i><b style="color:var(--heatA)">${pct0(st.heat)}</b></div>
+        <div><i>Cold ins</i><b style="color:var(--cold)">${deg(st.cold)}</b></div>
+        <div><i>Heat ins</i><b style="color:var(--hot)">${deg(st.hot)}</b></div>
       </div></div>`;
   }).join('');
 }
 
 /* ---------- render: material comparison ---------- */
 const COLS = [
-  ['label','Material'],
-  ['sharp','Sharp'],['blunt','Blunt'],['heat','Heat armor'],
-  ['cold','Cold ins.'],['hot','Heat ins.'],
-  ['dmg','Dmg taken'],
-  ['hp','HP'],['work','Work'],
+  ['label','Material',''],
+  ['sharp','Sharp','armor'],['blunt','Blunt','armor'],['heat','Heat','armor'],
+  ['cold','Cold','insulation'],['hot','Heat','insulation'],
+  ['dmg','Dmg taken',''],
+  ['hp','HP',''],['work','Work',''],
 ];
 function renderFocus(){
   const el = $('focusBody');
-  let it = state.items.find(x=>x.uid===state.focus);
-  if(!it){ el.innerHTML = '<div class="empty">Click a worn item (or add one) to see how every possible material changes its stats.</div>'; return; }
+  const it = state.items.find(x=>x.uid===state.focus);
+  if(!it){ el.innerHTML = '<div class="empty">Click an item in your outfit to compare every material it can be made from.</div>'; return; }
   const a = APP[it.id];
   const w = weaponInfo();
-  const costTxt = [a.count ? `${a.count}× material` : '', ...Object.entries(a.cost).map(([k,v])=>`${v}× ${k.replace('Component','component ').replace('Industrial','').replace('Spacer','(adv.)')}`)].filter(Boolean).join(' + ');
-  const eq = Object.entries(a.equipped).map(([k,v])=>{const L=STAT_LABELS[k]; return L?`${L[0]} ${L[1](v)}`:`${k} ${v}`}).join(' · ');
-  let head = `<div class="head"><div>
+  const costTxt = [a.count ? `${a.count} material` : '', ...Object.entries(a.cost).map(([k,v])=>`${v} ${k.replace('ComponentIndustrial','components').replace('ComponentSpacer','adv. components').toLowerCase()}`)].filter(Boolean).join(' + ');
+  const eq = Object.entries(a.equipped).map(([k,v])=>{const L=STAT_LABELS[k]; return L?`${L[0]} ${L[1](v)}`:`${k} ${v}`}).join(', ');
+  const head = `<div class="head">
       <h3>${esc(cap(a.label))}</h3>
       <div class="desc">${esc(a.desc)}</div>
-      <div class="meta">
-        <span>Layers <b>${a.layers.map(l=>LAYER_NAMES[l]).join(' + ')}</b></span>
+      <div class="facts">
+        <span>Layer <b>${a.layers.map(l=>LAYER_NAMES[l]).join(' + ')}</b></span>
         <span>Covers <b>${a.groups.join(', ')}</b></span>
         <span>Mass <b>${a.mass} kg</b></span>
         ${costTxt?`<span>Cost <b>${esc(costTxt)}</b></span>`:''}
         ${a.research.length?`<span>Research <b>${esc(a.research.join(', '))}</b></span>`:''}
-        ${a.stuffCats.length?`<span>Material multipliers <b>armor ×${a.mult.armor}, cold ×${a.mult.cold}, heat ×${a.mult.hot}</b></span>`:''}
-        ${eq?`<span>Worn effects <b>${esc(eq)}</b></span>`:''}
-      </div></div></div>`;
+        ${a.stuffCats.length?`<span>Material multipliers <b>armor ×${a.mult.armor} · cold ×${a.mult.cold} · heat ×${a.mult.hot}</b></span>`:''}
+        ${eq?`<span>When worn <b>${esc(eq)}</b></span>`:''}
+      </div></div>`;
 
   const mats = stuffsFor(a);
   if(!mats.length){
-    const st = stats(a, null, it.q);
-    el.innerHTML = head + `<p class="note" style="font-size:13px;margin-top:12px">This item has a fixed recipe, so material doesn't matter. Only quality changes its stats.</p>` + qualityTable(a, null);
+    el.innerHTML = head + `<p style="margin:14px 0 0;color:var(--muted)">This item has a fixed recipe, so only quality changes its stats:</p>` + qualityTable(a, null);
     return;
   }
   const cats = [...new Set(mats.flatMap(m=>m.cats.filter(c=>a.stuffCats.includes(c))))];
   for(const c of cats) if(state.cats[c]===undefined) state.cats[c]=true;
   const visible = mats.filter(m => m.cats.some(c=>a.stuffCats.includes(c) && state.cats[c]) && (state.showRestricted || !RESTRICTED.has(m.id) || m.id===it.stuff));
-  const cur = stats(a, it.stuff, it.q);
-  const dmgOf = st => passFrac(st[w.type==='Sharp'?'sharp':w.type==='Blunt'?'blunt':'heat'] - w.ap);
-  cur.dmg = dmgOf(cur);
+  const k = armorKey(w.type);
+  const dmgOf = st => passFrac(st[k] - w.ap);
+  const cur = stats(a, it.stuff, it.q); cur.dmg = dmgOf(cur);
   const rows = visible.map(m => { const st = stats(a, m.id, it.q); st.dmg = dmgOf(st); st.label = m.label; return {m, st}; });
   const {key, dir} = state.sort;
   rows.sort((x,y)=> key==='label' ? dir*x.st.label.localeCompare(y.st.label) : dir*(x.st[key]-y.st[key]) || x.st.label.localeCompare(y.st.label));
   const max = {}, best = {};
-  for(const [k] of COLS.slice(1)){ const vals = rows.map(r=>r.st[k]); max[k] = Math.max(...vals.map(Math.abs), 1e-9); best[k] = (k==='dmg'||k==='work') ? Math.min(...vals) : Math.max(...vals); }
+  for(const [c] of COLS.slice(1)){ const vals = rows.map(r=>r.st[c]); max[c] = Math.max(...vals.map(Math.abs), 1e-9); best[c] = (c==='dmg'||c==='work') ? Math.min(...vals) : Math.max(...vals); }
   const colors = {sharp:'var(--sharp)',blunt:'var(--blunt)',heat:'var(--heatA)',cold:'var(--cold)',hot:'var(--hot)',dmg:'var(--bad)',hp:'var(--info)',work:'var(--dim)'};
-  const fmt = {sharp:pct,blunt:pct,heat:pct,cold:v=>v.toFixed(1)+'°',hot:v=>v.toFixed(1)+'°',dmg:v=>Math.round(v*100)+'%',hp:v=>v,work:v=>Math.round(v/60)+''};
+  const fmt = {sharp:pct,blunt:pct,heat:pct,cold:v=>deg(v),hot:v=>deg(v),dmg:pct0,hp:v=>v,work:v=>Math.round(v/60)};
   const dfmt = {sharp:v=>sign((v*100).toFixed(1)),blunt:v=>sign((v*100).toFixed(1)),heat:v=>sign((v*100).toFixed(1)),cold:v=>sign(v.toFixed(1)),hot:v=>sign(v.toFixed(1)),dmg:v=>sign(Math.round(v*100)),hp:v=>sign(v),work:v=>sign(Math.round(v/60))};
   const lowerBetter = {dmg:1, work:1};
 
   const filters = `<div class="filters">
-    <span>Quality: <select data-k="q" data-u="${it.uid}">${QUALITIES.map((n,i)=>`<option value="${i}"${i===it.q?' selected':''}>${n}</option>`).join('')}</select></span>
-    ${cats.map(c=>`<label><input type="checkbox" data-cat="${c}"${state.cats[c]?' checked':''}> ${c==='Leathery'?'Leather':c==='Woody'?'Wood':c==='Metallic'?'Metal':c}</label>`).join('')}
-    <label title="Gold, silver, plasteel and uranium are unchecked in new bills by default, but you can allow them"><input type="checkbox" id="showRes"${state.showRestricted?' checked':''}> Show ⚑ materials (off in default bills)</label>
+    <label>Quality ${qualitySelect(it)}</label>
+    <span>Show:</span>
+    ${cats.map(c=>`<label><input type="checkbox" data-cat="${c}"${state.cats[c]?' checked':''}> ${catName(c)}</label>`).join('')}
+    <label title="Gold, silver, plasteel and uranium are off in new bills by default, but you can allow them"><input type="checkbox" id="showRes"${state.showRestricted?' checked':''}> ⚑ materials</label>
   </div>`;
-  const thead = `<thead><tr>${COLS.map(([k,l])=>`<th data-sort="${k}" class="${state.sort.key===k?'sorted':''}" title="${k==='dmg'?`Expected share of ${w.type.toLowerCase()} damage this single piece lets through vs ${esc(w.label)} (AP ${Math.round(w.ap*100)}%)`:k==='work'?'Work to make, in seconds of work at 1× speed (÷60)':''}">${l}${k==='dmg'?` <span style="font-weight:400">(${esc(w.label)})</span>`:''}${state.sort.key===k?(state.sort.dir<0?' ▼':' ▲'):''}</th>`).join('')}</tr></thead>`;
+  const thead = `<thead><tr>${COLS.map(([c,l,sub])=>{
+    const s = c==='dmg' ? `vs ${esc(w.label)}` : c==='work' ? 'to make' : sub;
+    const tip = c==='dmg' ? `Expected share of ${w.type.toLowerCase()} damage this one item lets through (AP ${pct0(w.ap)})` : c==='work' ? 'Work amount as shown in game' : '';
+    return `<th data-sort="${c}" class="${state.sort.key===c?'sorted':''}" title="${tip}">${l}${state.sort.key===c?(state.sort.dir<0?' ▼':' ▲'):''}${s?`<small>${s}</small>`:''}</th>`;}).join('')}</tr></thead>`;
   const tbody = rows.map(({m,st})=>{
     const isCur = m.id===it.stuff;
-    return `<tr data-stuff="${m.id}" class="${isCur?'cur':''} ${RESTRICTED.has(m.id)?'restricted':''}" title="${esc(m.desc)}">
-      <td>${swatch(m)}${esc(cap(m.label))}${isCur?' <span class="chip">worn</span>':''}</td>
-      ${COLS.slice(1).map(([k])=>{
-        const v = st[k], d = v - cur[k];
-        const good = lowerBetter[k] ? d<0 : d>0;
-        const dTxt = isCur || Math.abs(d)<1e-6 ? '<span class="d zero">·</span>' : `<span class="d ${good?'pos':'neg'}">${dfmt[k](d)}</span>`;
-        const isBest = Math.abs(v-best[k])<1e-9 && rows.length>1;
-        return `<td class="cell"><span class="${isBest?'best':''}">${fmt[k](v)}</span>${dTxt}<span class="bar" style="width:${Math.max(0,Math.abs(v)/max[k]*100)}%;background:${colors[k]}"></span></td>`;
+    return `<tr data-stuff="${m.id}" class="${isCur?'cur':''}" title="${esc(m.desc)}">
+      <td>${swatch(m)}${esc(cap(m.label))}${RESTRICTED.has(m.id)?'<span class="flag" title="Off in new bills by default">⚑</span>':''}${isCur?' <span class="chip">worn</span>':''}</td>
+      ${COLS.slice(1).map(([c])=>{
+        const v = st[c], d = v - cur[c];
+        const good = lowerBetter[c] ? d<0 : d>0;
+        const dTxt = isCur || Math.abs(d)<1e-6 ? '<span class="d zero">·</span>' : `<span class="d ${good?'pos':'neg'}">${dfmt[c](d)}</span>`;
+        const isBest = Math.abs(v-best[c])<1e-9 && rows.length>1;
+        return `<td class="cell"><span class="${isBest?'best':''}">${fmt[c](v)}</span>${dTxt}<span class="bar"><i style="width:${Math.max(0,Math.abs(v)/max[c]*100)}%;background:${colors[c]}"></i></span></td>`;
       }).join('')}
     </tr>`;
   }).join('');
   el.innerHTML = head + filters + `<div class="tblwrap"><table id="mtable">${thead}<tbody>${tbody}</tbody></table></div>
-    <div class="legend">Click a row to switch material. Small numbers show the difference from what's worn now. <b class="best" style="font-weight:700">Bold</b> marks the best value in each column. Armor caps at 200%. ⚑ marks materials that are off in a new bill by default.</div>`;
+    <div class="legend">Click a row to use that material. Green and red numbers show the change from what's worn now. <span class="best">Bold</span> marks the best value in each column. Armor caps at 200%.</div>`;
 }
 function qualityTable(a, stuffId){
   return `<div class="tblwrap" style="margin-top:8px"><table><thead><tr><th>Quality</th><th>Sharp</th><th>Blunt</th><th>Heat armor</th><th>Cold ins.</th><th>Heat ins.</th></tr></thead><tbody>${
-    QUALITIES.map((n,i)=>{const s=stats(a,stuffId,i);return `<tr><td>${n}</td><td class="cell">${pct(s.sharp)}</td><td class="cell">${pct(s.blunt)}</td><td class="cell">${pct(s.heat)}</td><td class="cell">${s.cold.toFixed(1)}°</td><td class="cell">${s.hot.toFixed(1)}°</td></tr>`}).join('')}</tbody></table></div>`;
+    QUALITIES.map((n,i)=>{const s=stats(a,stuffId,i);return `<tr><td>${n}</td><td class="cell">${pct(s.sharp)}</td><td class="cell">${pct(s.blunt)}</td><td class="cell">${pct(s.heat)}</td><td class="cell">${deg(s.cold)}</td><td class="cell">${deg(s.hot)}</td></tr>`}).join('')}</tbody></table></div>`;
 }
 
 /* ---------- render: summary ---------- */
 function renderSummary(){
   const el = $('summaryBody');
   const w = weaponInfo();
-  let cold=0, hot=0, mass=0; const eq = {};
   const worn = state.items.map(it => ({it, a:APP[it.id], st:stats(APP[it.id], it.stuff, it.q)}));
-  for(const {a,st} of worn){ cold+=st.cold; hot+=st.hot; mass+=a.mass; for(const [k,v] of Object.entries(a.equipped)) eq[k]=(eq[k]||0)+v; }
-  const tmin = HUMAN.comfyMin - cold, tmax = HUMAN.comfyMax + hot;
+  const t = outfitTotals(worn, w);
+  const eq = {...t.eq}; delete eq.MoveSpeed;
   const LO=-120, HI=80, sc = v => (Math.min(HI,Math.max(LO,v))-LO)/(HI-LO)*100;
-  const move = HUMAN.move + (eq.MoveSpeed||0);
-  delete eq.MoveSpeed;
   const shield = worn.find(x=>x.a.base.shield);
-
-  // armor per region, outermost first
-  const rows = REGIONS.map(([name, groups])=>{
-    const layers = worn.filter(x=>x.a.groups.some(g=>groups.includes(g)))
-      .sort((x,y)=>Math.max(...y.a.layers.map(l=>LAYER_ORDER[l]))-Math.max(...x.a.layers.map(l=>LAYER_ORDER[l])))
-      .filter(x => x.st.sharp>0 || x.st.blunt>0 || x.st.heat>0);
-    const t = w.type==='Sharp'?'sharp':w.type==='Blunt'?'blunt':'heat';
-    let pass = 1, noHit = 1;
-    for(const x of layers){ const A = x.st[t]-w.ap; pass *= passFrac(A); noHit *= 1-deflectChance(A); }
-    return {name, layers, pass, block:1-noHit};
-  });
-  const cls = p => p<=.25?'heat0':p<=.5?'heat1':p<=.8?'heat2':'heat3';
+  const k = armorKey(w.type);
 
   el.innerHTML = `
-    <div class="kv">
-      <span>Comfortable temperature</span><span class="v"><span style="color:var(--cold)">${tmin.toFixed(1)}°C</span> to <span style="color:var(--hot)">${tmax.toFixed(1)}°C</span></span>
+    <div class="big">
+      <div><i>Damage taken</i><b style="color:${dmgColor(t.avgDmg)}">${pct0(t.avgDmg)}</b></div>
+      <div><i>Move speed</i><b style="color:${t.move<HUMAN.move?'var(--bad)':'var(--text)'}">${Math.round(t.move/HUMAN.move*100)}%</b></div>
+      <div><i>Worn mass</i><b>${t.mass.toFixed(1)} kg</b></div>
     </div>
-    <div class="temp"><div class="tbar"><div class="rng" style="left:${sc(tmin)}%;width:${Math.max(1,sc(tmax)-sc(tmin))}%"></div></div>
+    <div class="note" style="margin-top:6px">Damage taken is the average over the whole body vs ${esc(w.label)}, weighted by how often each part gets hit.</div>
+    <div class="kv" style="margin-top:14px">
+      <span>Comfortable temperature</span><span class="v"><span style="color:var(--cold)">${t.tmin.toFixed(0)}°C</span> to <span style="color:var(--hot)">${t.tmax.toFixed(0)}°C</span></span>
+    </div>
+    <div class="temp"><div class="tbar"><div class="rng" style="left:${sc(t.tmin)}%;width:${Math.max(1,sc(t.tmax)-sc(t.tmin))}%"></div></div>
       <div class="tscale"><span>${LO}°</span><span>-80°</span><span>-40°</span><span>0°</span><span>40°</span><span>${HI}°</span></div></div>
-    <div class="kv" style="margin-top:8px">
-      <span>Insulation (cold / heat)</span><span class="v"><span style="color:var(--cold)">${deg(cold)}</span> / <span style="color:var(--hot)">${deg(hot)}</span></span>
-      <span>Move speed</span><span class="v">${move.toFixed(2)} c/s <span style="color:${move<HUMAN.move?'var(--bad)':'var(--dim)'}">(${Math.round(move/HUMAN.move*100)}%)</span></span>
-      <span>Worn mass</span><span class="v">${mass.toFixed(2)} kg</span>
+    <div class="kv">
+      <span>Insulation, cold / heat</span><span class="v"><span style="color:var(--cold)">${deg(t.cold)}</span> / <span style="color:var(--hot)">${deg(t.hot)}</span></span>
+      <span>Move speed</span><span class="v">${t.move.toFixed(2)} cells/s</span>
       ${Object.entries(eq).map(([k,v])=>{const L=STAT_LABELS[k]||[k,x=>x];return `<span>${L[0]}</span><span class="v">${L[1](v)}</span>`}).join('')}
-      ${shield?`<span>Shield energy</span><span class="v">${Math.round(shield.a.base.shield*100*(shield.a.quality?1:1))}</span>`:''}
+      ${shield?`<span>Shield energy</span><span class="v">${Math.round(shield.a.base.shield*100)}</span>`:''}
     </div>
-    <div class="note">Base human comfort range is 16°C to 26°C and base move speed is 4.6 cells/s. Genes, traits and health aren't included.</div>
+    <div class="note">Base human comfort range is 16°C to 26°C, base speed 4.6 cells/s. Genes, traits and health aren't included.</div>
 
     <div class="sect">
-      <h4>Protection by body part <span style="text-transform:none;letter-spacing:0;color:var(--dim);font-weight:400">vs ${esc(w.label)}: ${w.type}, AP ${Math.round(w.ap*100)}%</span></h4>
-      <div class="tblwrap"><table id="body"><thead><tr><th>Part</th><th style="text-align:left">Layers, outer to inner (${w.type.toLowerCase()} armor)</th><th title="Expected share of damage that reaches the body">Dmg in</th><th title="Chance the hit is fully deflected by some layer">Block</th></tr></thead><tbody>
-      ${rows.map(r=>`<tr><td class="reg">${r.name}</td>
-        <td class="lay">${r.layers.length ? r.layers.map(x=>{const t=w.type==='Sharp'?'sharp':w.type==='Blunt'?'blunt':'heat';const eff=x.st[t]-w.ap;return `<span class="chip" style="${eff<=0?'text-decoration:line-through;opacity:.6':''}" title="${esc(cap(x.a.label))}: ${pct(x.st[t])} (effective ${pct(Math.max(0,eff))})">${esc(x.a.label)} ${Math.round(x.st[t]*100)}%</span>`}).join('') : '<span style="color:var(--dim)">nothing</span>'}</td>
-        <td class="pct ${cls(r.pass)}">${Math.round(r.pass*100)}%</td>
-        <td class="pct">${Math.round(r.block*100)}%</td></tr>`).join('')}
+      <h4>Protection by body part <span>vs ${esc(w.label)} · ${w.type} · AP ${pct0(w.ap)}</span></h4>
+      <div class="tblwrap"><table id="body"><thead><tr><th>Part</th><th style="text-align:left">Layers, outer to inner</th><th title="Expected share of damage that reaches the body">Dmg in</th><th title="Chance some layer fully deflects the hit">Block</th></tr></thead><tbody>
+      ${t.regions.map(r=>`<tr><td class="reg" title="About ${pct0(r.weight)} of random hits land here">${r.name}</td>
+        <td class="lay">${r.layers.length ? r.layers.map(x=>{const eff=x.st[k]-w.ap;return `<span class="chip" style="${eff<=0?'text-decoration:line-through;opacity:.6':''}" title="${esc(cap(x.a.label))}: ${pct(x.st[k])} ${w.type.toLowerCase()} armor, ${pct(Math.max(0,eff))} after AP">${esc(x.a.label)} ${pct0(x.st[k])}</span>`}).join('') : '<span style="color:var(--dim)">nothing</span>'}</td>
+        <td><span class="dmg">${pct0(r.pass)}<span class="b"><i style="width:${r.pass*100}%;background:${dmgColor(r.pass)}"></i></span></span></td>
+        <td style="font-family:var(--mono)">${pct0(r.block)}</td></tr>`).join('')}
       </tbody></table></div>
-      <div class="note">Each layer rolls on its own. With effective armor A (armor minus AP), a hit is deflected with chance A/2 and halved with chance A/2 (capped at 100%), otherwise it passes. Struck-through chips are fully cancelled by the weapon's AP. A sharp hit that gets halved turns blunt, but lower layers still roll against their sharp armor.</div>
+      <div class="note">Each layer rolls separately. With armor A left after AP, the hit is deflected with chance A/2 and halved with chance A/2 (capped at 100%). Crossed-out chips are fully cancelled by the weapon's AP.</div>
     </div>
 
     <div class="sect">
@@ -510,42 +712,123 @@ function renderSummary(){
         <p><code>Armor = (base + material power × item armor multiplier) × quality</code>, capped at 200%.</p>
         <p><code>Insulation = (base + material insulation × item insulation multiplier) × quality</code></p>
         <p>Armor quality factors: ${QUALITIES.map((n,i)=>n+' ×'+Q_ARMOR[i]).join(', ')}.<br>Insulation quality factors: ${QUALITIES.map((n,i)=>n+' ×'+Q_INSUL[i]).join(', ')}.</p>
-        <p>Two items conflict when they share a layer and cover any of the same body parts, just like in game. Adding an item takes off whatever it conflicts with.</p>
-        <p>Data was read from the game's own Core XML files (v1.6.4871). DLC items aren't included.</p>
+        <p>Two items conflict when they share a layer and cover any of the same body parts, as in the game. Adding an item takes off whatever it conflicts with.</p>
+        <p>Hit shares per body part come from the human body's part coverage values. Data is from the game's Core XML files (v1.6.4871). DLC items aren't included.</p>
       </details>
     </div>`;
+}
+
+/* ---------- presets dialog ---------- */
+function wornFrom(items){ return toItems(items).map(it=>({a:APP[it.id], st:stats(APP[it.id], it.stuff, it.q)})); }
+function kpiChips(items, kind){
+  const w = weaponInfo();
+  const worn = wornFrom(items);
+  const t = outfitTotals(worn, w);
+  const chips = [];
+  if(kind==='blunt') chips.push(`Blunt dmg <b>${pct0(avgPass(worn,'Blunt',0))}</b>`);
+  else if(kind==='fire') chips.push(`Fire dmg <b>${pct0(avgPass(worn,'Heat',0))}</b>`);
+  else chips.push(`Dmg taken <b>${pct0(w.type==='Sharp'?t.avgDmg:avgPass(worn,'Sharp',0.165))}</b>`);
+  chips.push(`<b>${t.tmin.toFixed(0)}°</b> to <b>${t.tmax.toFixed(0)}°C</b>`);
+  chips.push(`Speed <b>${Math.round(t.move/HUMAN.move*100)}%</b>`);
+  if(kind==='social') chips.push(`Social <b>${pctS(t.eq.SocialImpact||0)}</b>`);
+  if(kind==='pain') chips.push(`Pain shock <b>${pctS(t.eq.PainShockThreshold||0)}</b>`);
+  if(kind==='tox') chips.push(`Toxic res. <b>${pctS(t.eq.ToxicEnvironmentResistance||0)}</b>`);
+  return chips.map(c=>`<span>${c}</span>`).join('');
+}
+const itemsLine = list => list.map(([id,st])=>`<span>${esc(itemName(id,st))}</span>`).join(' · ');
+const presetCache = {};
+function maxList(i){
+  const w = weaponInfo(), q = state.presetQ;
+  const key = [i,q,state.presetRes,w.type,w.ap].join('|');
+  return presetCache[key] || (presetCache[key] = optimize(OBJECTIVES[i], q, state.presetRes, w));
+}
+function renderPresets(){
+  const tabs = [['popular','Popular builds'],['max','Maximize a stat'],['mine',`My outfits${saved.length?` (${saved.length})`:''}`]];
+  $('presetTabs').innerHTML = tabs.map(([k,l])=>`<button class="tab${state.presetTab===k?' on':''}" data-tab="${k}">${l}</button>`).join('');
+  $('presetQ').value = state.presetQ; $('presetRes').checked = state.presetRes;
+  $('presetQ').closest('label').hidden = state.presetTab==='mine';
+  $('presetRes').closest('label').hidden = state.presetTab!=='max';
+  const w = weaponInfo();
+  $('presetWeaponNote').innerHTML = `Card stats are vs <b style="color:var(--text)">${esc(w.label)}</b> (change it in the top bar)`;
+  const q = state.presetQ;
+  const withQ = list => list.map(([id,st])=>[id,st,q]);
+  let html = '';
+  const group = (list, card) => { let last = ''; list.forEach((p,i)=>{ if(p.cat!==last){ if(last) html += '</div>'; html += `<div class="cat-h">${p.cat}</div><div class="cards">`; last = p.cat; } html += card(p,i); }); html += '</div>'; };
+  if(state.presetTab==='popular'){
+    group(POPULAR, (p,i)=>`<button class="card" data-pop="${i}"><div class="t"><b>${esc(p.name)}</b><span class="stage">${p.stage}</span></div>
+        <p>${esc(p.desc)}</p><div class="items">${itemsLine(p.items)}</div><div class="kpis">${kpiChips(withQ(p.items))}</div></button>`);
+  } else if(state.presetTab==='max'){
+    group(OBJECTIVES, (o,i)=>{ const list = maxList(i); return `<button class="card" data-max="${i}"><div class="t"><b>${esc(o.name)}</b><span class="stage">calculated</span></div>
+        <p>${esc(o.desc)}</p><div class="items">${itemsLine(list)}</div><div class="kpis">${kpiChips(withQ(list),o.kpi)}</div></button>`; });
+    html += `<p class="note">These are found by trying every valid combination of items, each in its best material for the goal, at the quality chosen above. Utility belts aren't included, and every outfit covers torso and legs so pawns aren't naked.</p>`;
+  } else {
+    html += `<div class="save-row"><input type="text" id="saveName" placeholder="Name the current outfit, e.g. Sniper or Doctor" maxlength="40"><button class="btn primary" id="saveNow">Save current outfit</button></div>`;
+    if(!saved.length) html += `<div class="empty">No saved outfits yet. Build an outfit and save it here. It stays in this browser.</div>`;
+    else html += `<div class="cards">${saved.map((s,i)=>`<div class="card" data-saved="${i}" role="button" tabindex="0"><div class="t"><b>${esc(s.name)}</b></div>
+        <div class="items">${s.items.map(([id,st,q])=>`<span>${esc(itemName(id,st))}</span> <span style="color:var(--dim)">(${QUALITIES[q]??'—'})</span>`).join(' · ')}</div>
+        <div class="kpis">${kpiChips(s.items)}</div>
+        <div class="acts"><button class="btn sm" data-overwrite="${i}" title="Replace with the current outfit">Overwrite</button><button class="btn sm" data-delsaved="${i}">Delete</button></div></div>`).join('')}</div>`;
+  }
+  $('presetBody').innerHTML = html;
+}
+function openPresets(tab){ if(tab) state.presetTab = tab; $('presetModal').hidden = false; document.body.style.overflow='hidden'; renderPresets(); }
+function closePresets(){ $('presetModal').hidden = true; document.body.style.overflow=''; save(); }
+function saveCurrent(name){
+  if(!state.items.length){ toast('Nothing worn to save'); return; }
+  name = (name||'').trim() || `Outfit ${saved.length+1}`;
+  saved.push({name, items:compact(state.items)}); saveSaved(); state.outfitName = name; render();
+  toast(`Saved “${name}”`);
 }
 
 function render(){ renderPicker(); renderLoadout(); renderFocus(); renderSummary(); save(); }
 
 /* ---------- events ---------- */
 document.addEventListener('click', e=>{
-  const del = e.target.closest('[data-del]'); if(del){ e.stopPropagation(); remove(del.dataset.del); return; }
-  const it = e.target.closest('.it'); if(it){ const ex = state.items.find(x=>x.id===it.dataset.id); if(ex){ state.focus=ex.uid; render(); } else wear(it.dataset.id); return; }
-  const th = e.target.closest('#mtable th[data-sort]'); if(th){ const k=th.dataset.sort; state.sort = {key:k, dir: state.sort.key===k ? -state.sort.dir : (k==='label'||k==='dmg'||k==='work'?1:-1)}; renderFocus(); return; }
-  const tr = e.target.closest('#mtable tr[data-stuff]'); if(tr){ const cur = state.items.find(x=>x.uid===state.focus); if(cur){ cur.stuff = tr.dataset.stuff; render(); } return; }
-  const pr = e.target.closest('[data-preset]'); if(pr){ const p = PRESETS[+pr.dataset.preset]; state.items=[]; for(const [id,st] of p[1]) if(APP[id]) wear(id, st, 2); toast('Loaded preset: '+p[0]); return; }
-  const sl = e.target.closest('.slot'); if(sl && !e.target.closest('select')){ state.focus = sl.dataset.u; renderLoadout(); renderFocus(); return; }
+  const T = e.target;
+  if(T.closest('#toastUndo')){ if(undoSnap){ const s=undoSnap; undoSnap=null; state.items = toItems(s.items); state.outfitName = s.name||''; state.focus = pickFocus(); render(); toast('Undone'); } return; }
+  if(T.closest('#openPresets')){ openPresets(); return; }
+  if(T.closest('#closePresets') || T.id==='presetModal'){ closePresets(); return; }
+  const tab = T.closest('[data-tab]'); if(tab){ state.presetTab = tab.dataset.tab; renderPresets(); return; }
+  if(T.closest('#saveNow')){ saveCurrent($('saveName').value); renderPresets(); return; }
+  const ow = T.closest('[data-overwrite]'); if(ow){ const s = saved[+ow.dataset.overwrite]; if(state.items.length){ s.items = compact(state.items); saveSaved(); renderPresets(); toast(`Updated “${s.name}”`); } return; }
+  const ds = T.closest('[data-delsaved]'); if(ds){ const i=+ds.dataset.delsaved; const s=saved[i]; saved.splice(i,1); saveSaved(); renderPresets(); toast(`Deleted “${s.name}”`); return; }
+  const pop = T.closest('[data-pop]'); if(pop){ const p = POPULAR[+pop.dataset.pop]; closePresets(); applyOutfit(p.items.map(([id,st])=>[id,st,state.presetQ]), p.name); return; }
+  const mx = T.closest('[data-max]'); if(mx){ const i = +mx.dataset.max; const list = maxList(i); closePresets(); applyOutfit(list.map(([id,st])=>[id,st,state.presetQ]), OBJECTIVES[i].name); return; }
+  const sv = T.closest('[data-saved]'); if(sv){ const s = saved[+sv.dataset.saved]; closePresets(); applyOutfit(s.items, s.name); return; }
+  if(T.closest('#saveBtn')){ openPresets('mine'); setTimeout(()=>$('saveName')?.focus(), 0); return; }
+
+  const del = T.closest('[data-del]'); if(del){ e.stopPropagation(); remove(del.dataset.del); return; }
+  const it = T.closest('.it'); if(it){ const ex = state.items.find(x=>x.id===it.dataset.id); if(ex){ state.focus=ex.uid; render(); } else wear(it.dataset.id); return; }
+  const th = T.closest('#mtable th[data-sort]'); if(th){ const k=th.dataset.sort; state.sort = {key:k, dir: state.sort.key===k ? -state.sort.dir : (k==='label'||k==='dmg'||k==='work'?1:-1)}; renderFocus(); return; }
+  const tr = T.closest('#mtable tr[data-stuff]'); if(tr){ const cur = state.items.find(x=>x.uid===state.focus); if(cur){ cur.stuff = tr.dataset.stuff; state.outfitName=''; render(); } return; }
+  const sl = T.closest('.slot'); if(sl && !T.closest('select')){ state.focus = sl.dataset.u; renderLoadout(); renderFocus(); return; }
+});
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape' && !$('presetModal').hidden) closePresets();
+  if(e.key==='Enter' && e.target.id==='saveName'){ saveCurrent(e.target.value); renderPresets(); }
+  if(e.key==='Enter' && e.target.matches('[data-saved]')) e.target.click();
 });
 document.addEventListener('change', e=>{
   const t = e.target;
-  if(t.dataset.k){ const it = state.items.find(x=>x.uid===t.dataset.u); if(!it) return; it[t.dataset.k] = t.dataset.k==='q' ? +t.value : t.value; state.focus = it.uid; render(); return; }
+  if(t.dataset.k){ const it = state.items.find(x=>x.uid===t.dataset.u); if(!it) return; it[t.dataset.k] = t.dataset.k==='q' ? +t.value : t.value; state.focus = it.uid; state.outfitName=''; render(); return; }
   if(t.dataset.cat){ state.cats[t.dataset.cat] = t.checked; renderFocus(); return; }
   if(t.id==='showRes'){ state.showRestricted = t.checked; renderFocus(); save(); return; }
   if(t.id==='weapon'){ state.weapon = t.value; $('customAP').hidden = t.value!=='custom'; render(); return; }
   if(t.id==='allQ' && t.value!==''){ for(const it of state.items) if(APP[it.id].quality) it.q=+t.value; t.value=''; render(); return; }
+  if(t.id==='presetQ'){ state.presetQ = +t.value; renderPresets(); return; }
+  if(t.id==='presetRes'){ state.presetRes = t.checked; renderPresets(); return; }
 });
 $('apInput').addEventListener('input', e=>{ state.customAP = Math.max(0,(+e.target.value||0)/100); renderFocus(); renderSummary(); save(); });
 $('search').addEventListener('input', renderPicker);
-$('clearBtn').addEventListener('click', ()=>{ state.items=[]; state.focus=null; render(); });
+$('clearBtn').addEventListener('click', ()=>{ if(!state.items.length) return; const snap = snapshot(); state.items=[]; state.focus=null; state.outfitName=''; render(); toast('Outfit cleared', snap); });
 
 /* ---------- init ---------- */
 $('weapon').innerHTML = WEAPONS.map(w=>`<option value="${w[0]}">${esc(w[1])}${w[3]!=null?` · ${w[2]} ${Math.round(w[3]*100)}% AP`:''}</option>`).join('');
 $('allQ').innerHTML += QUALITIES.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
-$('presets').innerHTML = PRESETS.map((p,i)=>`<button class="btn sm" data-preset="${i}">${esc(p[0])}</button>`).join('');
+$('presetQ').innerHTML = QUALITIES.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
 load();
-if(!state.items.length){ for(const [id,st] of PRESETS[2][1]) wear(id, st, 2); state.focus = state.items.find(x=>x.id==='Apparel_Duster')?.uid; }
-if(!state.focus) state.focus = state.items.at(-1)?.uid ?? null;
+if(!hadStorage){ const p = POPULAR.find(p=>p.name==='Devilstrand standard'); state.items = toItems(p.items.map(([id,st])=>[id,st,2])); state.outfitName = p.name; }
+state.focus = pickFocus();
 $('weapon').value = state.weapon; $('customAP').hidden = state.weapon!=='custom'; $('apInput').value = Math.round(state.customAP*100);
 render();
 </script>
