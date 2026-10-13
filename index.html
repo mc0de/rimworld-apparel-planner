@@ -7,16 +7,19 @@
 <meta name="description" content="Plan RimWorld outfits and compare how every material changes armor and insulation.">
 <style>
 :root{
-  /* Tailwind palette */
-  --bg:#0c0a09; --panel:#151311; --panel2:#1c1917; --panel3:#292524; --line:#292524; --line2:#44403c;   /* stone 950, ~925, 900, 800, 800, 700 */
-  --text:#f5f5f4; --muted:#d6d3d1; --dim:#a8a29e;                                                    /* stone 100/300/400 */
-  --accent:#fbbf24; --accent2:#fde68a; --accentBg:rgba(245,158,11,.08); --accentLine:rgba(245,158,11,.45);  /* amber 400/200, amber 500 at low alpha */
-  --go:#059669; --goHover:#10b981; --goText:#ecfdf5;                                                  /* emerald 600/500/50 */
-  --good:#34d399; --bad:#f87171; --info:#60a5fa; --warn:#a3e635;                                      /* emerald 400, red 400, blue 400, lime 400 */
-  --sharp:#fb923c; --blunt:#facc15; --heatA:#f43f5e; --cold:#38bdf8; --hot:#f59e0b;                   /* orange 400, yellow 400, rose 500, sky 400, amber 500 */
-  --row:#12100f; --hover:#231f1d; --th:#1c1917;
+  /* Layout: three working columns (pick, outfit + materials, pawn summary) on a quiet stone ground.
+     Color: low-contrast warm neutrals; hue appears only on small marks (dots, bars), text stays in ink tokens. */
+  --bg:#1a1816; --panel:#211f1c; --panel2:#282522; --panel3:#33302c; --line:#302c28; --line2:#46413b;
+  --text:#e6e1d8; --muted:#b5ada1; --dim:#8a8378;
+  --accent:#d4a24c; --accent2:#e6c68a; --accentBg:rgba(212,162,76,.07); --accentLine:rgba(212,162,76,.4);
+  --go:#3d8b65; --goHover:#47a074; --goText:#f0fdf4;
+  --good:#6fb38a; --bad:#d07a6c; --warn:#c8b25a; --info:#6f9fd0;
+  /* stat identity, validated (dark, adjacent order) with the dataviz palette checker */
+  --sharp:#9085e9; --blunt:#c98500; --heatA:#d55181; --cold:#3987e5; --hot:#d95926;
+  --row:#1e1c19; --hover:#2c2926; --th:#262320;
   --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
   --r:8px;
+  color-scheme: dark;
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -28,19 +31,19 @@ select:focus,input:focus,button:focus-visible{outline:2px solid var(--accent);ou
 .btn:hover{border-color:var(--accent);color:var(--accent2)}
 .btn.primary{background:var(--go);border-color:var(--go);color:var(--goText);font-weight:700}
 .btn.primary:hover{background:var(--goHover);border-color:var(--goHover);color:#fff}
-.btn.presets{font-size:16px;padding:8px 18px 8px 14px;border-radius:7px;display:inline-flex;align-items:center;gap:8px;box-shadow:0 0 0 0 #10b98188,0 4px 14px #05966933}
+.btn.presets{font-size:16px;padding:8px 18px 8px 14px;border-radius:7px;display:inline-flex;align-items:center;gap:8px;box-shadow:0 0 0 0 rgba(61,139,101,.5),0 4px 14px rgba(61,139,101,.18)}
 .btn.presets svg{width:18px;height:18px}
 .btn.presets .count{background:#022c2244;border-radius:10px;padding:0 7px;font-size:13px;font-weight:700}
 .btn.presets.pulse{animation:pulse 1.8s ease-out infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 #10b981aa,0 4px 14px #05966933}70%{box-shadow:0 0 0 12px #10b98100,0 4px 14px #05966933}100%{box-shadow:0 0 0 0 #10b98100,0 4px 14px #05966933}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(61,139,101,.6),0 4px 14px rgba(61,139,101,.18)}70%{box-shadow:0 0 0 12px rgba(61,139,101,0),0 4px 14px rgba(61,139,101,.18)}100%{box-shadow:0 0 0 0 rgba(61,139,101,0),0 4px 14px rgba(61,139,101,.18)}}
 @media (prefers-reduced-motion:reduce){.btn.presets.pulse{animation:none}}
-.presets-cta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.35);border-radius:7px;padding:10px 12px;margin-bottom:12px}
+.presets-cta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:rgba(61,139,101,.07);border:1px solid rgba(61,139,101,.3);border-radius:7px;padding:10px 12px;margin-bottom:12px}
 .presets-cta span{color:var(--muted);font-size:14px;flex:1;min-width:220px}
 .btn.sm{padding:3px 9px;font-size:13px}
 .btn.ghost{background:none;border-color:transparent;color:var(--dim)}
 .btn.ghost:hover{color:var(--bad);border-color:transparent}
 
-header{display:flex;align-items:center;gap:14px 18px;flex-wrap:wrap;padding:12px 18px;border-bottom:1px solid var(--line);background:#0a0908;border-bottom-color:var(--line);position:sticky;top:0;z-index:5}
+header{display:flex;align-items:center;gap:14px 18px;flex-wrap:wrap;padding:12px 18px;border-bottom:1px solid var(--line);background:var(--panel);border-bottom-color:var(--line);position:sticky;top:0;z-index:5}
 header h1{font-size:19px;margin:0;color:var(--accent2);font-weight:650}
 header .ver{color:var(--dim);font-size:13px}
 header .spacer{flex:1}
@@ -79,8 +82,9 @@ main{display:grid;grid-template-columns:270px minmax(0,1fr) 420px;gap:14px;paddi
 .slot .row select{flex:1;min-width:120px}
 .mini{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:9px}
 .mini div{background:var(--panel);border-radius:4px;padding:3px 6px;text-align:center}
-.mini i{display:block;font-style:normal;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.4px}
-.mini b{font-family:var(--mono);font-size:13.5px;font-weight:600}
+.mini i{display:block;font-style:normal;font-size:11.5px;color:var(--dim);white-space:nowrap}
+.mini b{font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--text)}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:1px}
 .empty{color:var(--dim);padding:10px 2px}
 .chip{display:inline-block;font-size:12px;padding:1px 7px;border-radius:4px;background:var(--panel3);color:var(--muted);margin:2px 3px 2px 0}
 .sw{display:inline-block;width:11px;height:11px;border-radius:3px;border:1px solid #0008;vertical-align:-1px;margin-right:6px}
@@ -118,7 +122,8 @@ th:first-child,td:first-child{text-align:left}
 .cell .bar i{display:block;height:100%;border-radius:2px}
 .cell .d{display:block;font-size:12px;line-height:1.15;margin-bottom:3px}
 .pos{color:var(--good)} .neg{color:var(--bad)} .zero{color:var(--dim)}
-.best{font-weight:800;color:var(--accent2)}
+.cell{color:var(--muted)}
+.best{font-weight:700;color:var(--text)}
 .flag{color:var(--dim);font-size:12px;margin-left:4px}
 .legend{font-size:13px;color:var(--dim);margin-top:8px}
 
@@ -130,7 +135,7 @@ th:first-child,td:first-child{text-align:left}
 .kv{display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:14px;margin-top:10px}
 .kv .v{font-family:var(--mono);text-align:right}
 .temp{margin:12px 0 2px}
-.tbar{position:relative;height:18px;border-radius:4px;background:linear-gradient(90deg,#2563eb 0%,#38bdf8 33%,#34d399 50%,#fbbf24 67%,#ef4444 100%)}
+.tbar{position:relative;height:18px;border-radius:4px;background:linear-gradient(90deg,#3d6488 0%,#4f84a0 33%,#5b8a6e 50%,#a98a4e 67%,#a25a4b 100%)}
 .tbar .rng{position:absolute;top:-3px;bottom:-3px;border:2px solid var(--accent2);border-radius:4px;background:#ffffff22}
 .tscale{display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim);font-family:var(--mono);margin-top:3px}
 .sect{margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
@@ -606,11 +611,11 @@ function renderLoadout(){
       <div class="layers">${a.layers.map(l=>LAYER_NAMES[l]).join(' + ')} layer · ${a.groups.join(', ')}</div>
       <div class="row">${matSel}${qualitySelect(it)}</div>
       <div class="mini">
-        <div><i>Sharp</i><b style="color:var(--sharp)">${pct0(st.sharp)}</b></div>
-        <div><i>Blunt</i><b style="color:var(--blunt)">${pct0(st.blunt)}</b></div>
-        <div><i>Heat</i><b style="color:var(--heatA)">${pct0(st.heat)}</b></div>
-        <div><i>Cold ins</i><b style="color:var(--cold)">${deg(st.cold)}</b></div>
-        <div><i>Heat ins</i><b style="color:var(--hot)">${deg(st.hot)}</b></div>
+        <div><i><span class="dot" style="background:var(--sharp)"></span>Sharp</i><b>${pct0(st.sharp)}</b></div>
+        <div><i><span class="dot" style="background:var(--blunt)"></span>Blunt</i><b>${pct0(st.blunt)}</b></div>
+        <div><i><span class="dot" style="background:var(--heatA)"></span>Heat</i><b>${pct0(st.heat)}</b></div>
+        <div><i><span class="dot" style="background:var(--cold)"></span>Cold ins</i><b>${deg(st.cold)}</b></div>
+        <div><i><span class="dot" style="background:var(--hot)"></span>Heat ins</i><b>${deg(st.hot)}</b></div>
       </div></div>`;
   }).join('');
 }
@@ -674,7 +679,7 @@ function renderFocus(){
   const thead = `<thead><tr>${COLS.map(([c,l,sub])=>{
     const s = c==='dmg' ? `vs ${esc(w.label)}` : c==='work' ? 'to make' : sub;
     const tip = c==='dmg' ? `Expected share of ${w.type.toLowerCase()} damage this one item lets through (AP ${pct0(w.ap)})` : c==='work' ? 'Work amount as shown in game' : '';
-    return `<th data-sort="${c}" class="${state.sort.key===c?'sorted':''}" title="${tip}">${l}${state.sort.key===c?(state.sort.dir<0?' ▼':' ▲'):''}${s?`<small>${s}</small>`:''}</th>`;}).join('')}</tr></thead>`;
+    return `<th data-sort="${c}" class="${state.sort.key===c?'sorted':''}" title="${tip}">${['sharp','blunt','heat','cold','hot'].includes(c)?`<span class="dot" style="background:${colors[c]}"></span>`:''}${l}${state.sort.key===c?(state.sort.dir<0?' ▼':' ▲'):''}${s?`<small>${s}</small>`:''}</th>`;}).join('')}</tr></thead>`;
   const tbody = rows.map(({m,st})=>{
     const isCur = m.id===it.stuff;
     return `<tr data-stuff="${m.id}" class="${isCur?'cur':''}" title="${esc(m.desc)}">
@@ -709,18 +714,18 @@ function renderSummary(){
 
   el.innerHTML = `
     <div class="big">
-      <div><i>Damage taken</i><b style="color:${dmgColor(t.avgDmg)}">${pct0(t.avgDmg)}</b></div>
+      <div><i>Damage taken</i><b>${pct0(t.avgDmg)}</b></div>
       <div><i>Move speed</i><b style="color:${t.move<HUMAN.move?'var(--bad)':'var(--text)'}">${Math.round(t.move/HUMAN.move*100)}%</b></div>
       <div><i>Worn mass</i><b>${t.mass.toFixed(1)} kg</b></div>
     </div>
     <div class="note" style="margin-top:6px">Damage taken is the average over the whole body vs ${esc(w.label)}, weighted by how often each part gets hit.</div>
     <div class="kv" style="margin-top:14px">
-      <span>Comfortable temperature</span><span class="v"><span style="color:var(--cold)">${t.tmin.toFixed(0)}°C</span> to <span style="color:var(--hot)">${t.tmax.toFixed(0)}°C</span></span>
+      <span>Comfortable temperature</span><span class="v">${t.tmin.toFixed(0)}°C to ${t.tmax.toFixed(0)}°C</span>
     </div>
     <div class="temp"><div class="tbar"><div class="rng" style="left:${sc(t.tmin)}%;width:${Math.max(1,sc(t.tmax)-sc(t.tmin))}%"></div></div>
       <div class="tscale"><span>${LO}°</span><span>-80°</span><span>-40°</span><span>0°</span><span>40°</span><span>${HI}°</span></div></div>
     <div class="kv">
-      <span>Insulation, cold / heat</span><span class="v"><span style="color:var(--cold)">${deg(t.cold)}</span> / <span style="color:var(--hot)">${deg(t.hot)}</span></span>
+      <span>Insulation, cold / heat</span><span class="v">${deg(t.cold)} / ${deg(t.hot)}</span>
       <span>Move speed</span><span class="v">${t.move.toFixed(2)} cells/s</span>
       ${Object.entries(eq).map(([k,v])=>{const L=STAT_LABELS[k]||[k,x=>x];return `<span>${L[0]}</span><span class="v">${L[1](v)}</span>`}).join('')}
       ${shield?`<span>Shield energy</span><span class="v">${Math.round(shield.a.base.shield*100)}</span>`:''}
