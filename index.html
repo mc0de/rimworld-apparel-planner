@@ -7,11 +7,11 @@
 <meta name="description" content="Plan RimWorld outfits and compare how every material changes armor and insulation.">
 <style>
 :root{
-  --bg:#141619; --panel:#1d2024; --panel2:#24282d; --panel3:#2b3036; --line:#343940; --line2:#4a5058;
-  --text:#ece7dc; --muted:#b4aea2; --dim:#8a857c;
-  --accent:#e0b866; --accent2:#f3d9a0; --accentBg:#3a3222;
-  --good:#8fd27a; --bad:#ec7f6b; --info:#7db6e3;
-  --sharp:#f0a070; --blunt:#d8c47e; --heatA:#f07b7b; --cold:#7cc4ee; --hot:#f2b25c;
+  --bg:#11141a; --panel:#1a1f28; --panel2:#222936; --panel3:#2c3443; --line:#323b4b; --line2:#46526a;
+  --text:#f4f1ea; --muted:#c4c9d4; --dim:#929bad;
+  --accent:#ffb627; --accent2:#ffd57a; --accentBg:#3d2f12;
+  --good:#5fe07a; --bad:#ff5f56; --info:#4fb6ff;
+  --sharp:#ff8a3d; --blunt:#f7d23e; --heatA:#ff4f6d; --cold:#3fc8ff; --hot:#ffa21f;
   --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
   --r:7px;
 }
@@ -23,13 +23,21 @@ select,input[type=number],input[type=text],input[type=search]{background:var(--p
 select:focus,input:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .btn{background:var(--panel3);border:1px solid var(--line2);border-radius:5px;padding:6px 12px;cursor:pointer;white-space:nowrap}
 .btn:hover{border-color:var(--accent);color:var(--accent2)}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:#1b1608;font-weight:600}
-.btn.primary:hover{background:var(--accent2);color:#1b1608}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#1b1305;font-weight:700}
+.btn.primary:hover{background:var(--accent2);border-color:var(--accent2);color:#1b1305}
+.btn.presets{font-size:16px;padding:8px 18px 8px 14px;border-radius:7px;display:inline-flex;align-items:center;gap:8px;box-shadow:0 0 0 0 #ffb62788,0 4px 14px #ffb62740}
+.btn.presets svg{width:18px;height:18px}
+.btn.presets .count{background:#1b130522;border-radius:10px;padding:0 7px;font-size:13px;font-weight:700}
+.btn.presets.pulse{animation:pulse 1.8s ease-out infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 #ffb627aa,0 4px 14px #ffb62740}70%{box-shadow:0 0 0 12px #ffb62700,0 4px 14px #ffb62740}100%{box-shadow:0 0 0 0 #ffb62700,0 4px 14px #ffb62740}}
+@media (prefers-reduced-motion:reduce){.btn.presets.pulse{animation:none}}
+.presets-cta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:linear-gradient(90deg,#3d2f12,#2a2410);border:1px solid #7a5a1c;border-radius:7px;padding:10px 12px;margin-bottom:12px}
+.presets-cta span{color:var(--accent2);font-size:14px;flex:1;min-width:220px}
 .btn.sm{padding:3px 9px;font-size:13px}
 .btn.ghost{background:none;border-color:transparent;color:var(--dim)}
 .btn.ghost:hover{color:var(--bad);border-color:transparent}
 
-header{display:flex;align-items:center;gap:14px 18px;flex-wrap:wrap;padding:12px 18px;border-bottom:1px solid var(--line);background:#101215;position:sticky;top:0;z-index:5}
+header{display:flex;align-items:center;gap:14px 18px;flex-wrap:wrap;padding:12px 18px;border-bottom:1px solid var(--line);background:#0c0f14;position:sticky;top:0;z-index:5}
 header h1{font-size:19px;margin:0;color:var(--accent2);font-weight:650}
 header .ver{color:var(--dim);font-size:13px}
 header .spacer{flex:1}
@@ -49,7 +57,7 @@ main{display:grid;grid-template-columns:270px minmax(0,1fr) 420px;gap:14px;paddi
 .grp-h{font-size:12.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--accent);margin:14px 0 5px}
 .it{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:5px;cursor:pointer;border:1px solid transparent}
 .it:hover{background:var(--panel2);border-color:var(--line2)}
-.it.worn{background:var(--accentBg);border-color:#6b5a33}
+.it.worn{background:var(--accentBg);border-color:#a77a1f}
 .it .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .it .tag{font-size:12px;color:var(--dim);white-space:nowrap}
 .it .add{width:16px;text-align:center;color:var(--dim)}
@@ -84,18 +92,18 @@ main{display:grid;grid-template-columns:270px minmax(0,1fr) 420px;gap:14px;paddi
 .tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px}
 table{border-collapse:collapse;width:100%}
 th,td{padding:7px 10px;text-align:right;white-space:nowrap}
-th{position:sticky;top:0;background:#2a2f35;font-weight:600;font-size:13px;color:var(--muted);user-select:none;border-bottom:1px solid var(--line2)}
+th{position:sticky;top:0;background:#28303e;font-weight:600;font-size:13px;color:var(--muted);user-select:none;border-bottom:1px solid var(--line2)}
 th[data-sort]{cursor:pointer} th[data-sort]:hover{color:var(--accent2)}
 th.sorted{color:var(--accent2)}
 th small{display:block;font-weight:400;font-size:11.5px;color:var(--dim)}
 th:first-child,td:first-child{text-align:left}
-#mtable tbody tr{border-top:1px solid #2c3036;cursor:pointer}
-#mtable tbody tr:nth-child(even){background:#202327}
-#mtable tbody tr:hover{background:#2c3036}
-#mtable tbody tr.cur{background:var(--accentBg);outline:1px solid #6b5a33}
+#mtable tbody tr{border-top:1px solid #2a3240;cursor:pointer}
+#mtable tbody tr:nth-child(even){background:#1e2430}
+#mtable tbody tr:hover{background:#2c3546}
+#mtable tbody tr.cur{background:var(--accentBg);outline:1px solid #a77a1f}
 .cell{position:relative;font-family:var(--mono);font-size:14px}
 .cell .bar{position:absolute;left:6px;right:6px;bottom:3px;height:3px;border-radius:2px;background:#ffffff10}
-.cell .bar i{display:block;height:100%;border-radius:2px;opacity:.85}
+.cell .bar i{display:block;height:100%;border-radius:2px}
 .cell .d{display:block;font-size:12px;line-height:1.15;margin-bottom:3px}
 .pos{color:var(--good)} .neg{color:var(--bad)} .zero{color:var(--dim)}
 .best{font-weight:800;color:var(--accent2)}
@@ -110,7 +118,7 @@ th:first-child,td:first-child{text-align:left}
 .kv{display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:14px;margin-top:10px}
 .kv .v{font-family:var(--mono);text-align:right}
 .temp{margin:12px 0 2px}
-.tbar{position:relative;height:18px;border-radius:4px;background:linear-gradient(90deg,#2d5d86 0%,#3b7d9f 35%,#5f8f5a 50%,#a0773a 65%,#9a3f30 100%)}
+.tbar{position:relative;height:18px;border-radius:4px;background:linear-gradient(90deg,#1f6fd6 0%,#2bb2e8 33%,#43c46a 50%,#f2a524 67%,#e8452f 100%)}
 .tbar .rng{position:absolute;top:-3px;bottom:-3px;border:2px solid var(--accent2);border-radius:4px;background:#ffffff22}
 .tscale{display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim);font-family:var(--mono);margin-top:3px}
 .sect{margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
@@ -130,7 +138,7 @@ details.help p{margin:6px 0}
 code{font-family:var(--mono);font-size:13px;color:var(--accent2)}
 
 /* toast */
-.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(10px);background:#2d2a20;border:1px solid var(--accent);color:var(--accent2);padding:9px 14px;border-radius:7px;font-size:14px;opacity:0;transition:.2s;pointer-events:none;z-index:30;display:flex;gap:12px;align-items:center;max-width:calc(100% - 32px)}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(10px);background:#3d2f12;border:1px solid var(--accent);color:var(--accent2);padding:9px 14px;border-radius:7px;font-size:14px;opacity:0;transition:.2s;pointer-events:none;z-index:30;display:flex;gap:12px;align-items:center;max-width:calc(100% - 32px)}
 .toast.on{opacity:1;transform:translateX(-50%);pointer-events:auto}
 
 /* presets dialog */
@@ -149,7 +157,7 @@ code{font-family:var(--mono);font-size:13px;color:var(--accent2)}
 .cat-h:not(:first-child){margin-top:20px}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
 .card{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px 13px;cursor:pointer;display:flex;flex-direction:column;gap:6px;text-align:left}
-.card:hover{border-color:var(--accent);background:#2a2e33}
+.card:hover{border-color:var(--accent);background:#29313f}
 .card .t{display:flex;align-items:baseline;gap:8px}
 .card .t b{font-size:16px;font-weight:650;color:var(--text)}
 .card .t .stage{margin-left:auto;font-size:11.5px;padding:1px 7px;border-radius:10px;background:var(--panel3);color:var(--muted);white-space:nowrap}
@@ -167,9 +175,9 @@ code{font-family:var(--mono);font-size:13px;color:var(--accent2)}
 <body>
 <header>
   <h1>RimWorld Apparel Planner</h1>
+  <button class="btn primary presets" id="openPresets" data-open-presets title="Browse ready-made outfits"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Presets <span class="count" id="presetCount"></span></button>
   <span class="ver">Core game data · v1.6.4871</span>
   <span class="spacer"></span>
-  <button class="btn primary" id="openPresets">Presets</button>
   <div class="ctl"><label for="weapon">Incoming attack</label>
     <select id="weapon"></select>
   </div>
@@ -191,8 +199,8 @@ code{font-family:var(--mono);font-size:13px;color:var(--accent2)}
   <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
     <section class="panel">
       <h2>Worn outfit <span class="sub" id="outfitName"></span>
-        <span class="r"><button class="btn sm" id="saveBtn">Save outfit</button><button class="btn sm" id="clearBtn">Clear</button></span></h2>
-      <div class="pad" id="loadout"></div>
+        <span class="r"><button class="btn sm primary" data-open-presets>Load preset</button><button class="btn sm" id="saveBtn">Save outfit</button><button class="btn sm" id="clearBtn">Clear</button></span></h2>
+      <div class="pad"><div class="presets-cta" id="presetsCta" hidden><span>Not sure where to start? Pick one of the ready-made outfits, or let the planner find the best one for a goal.</span><button class="btn primary sm" data-open-presets>Browse presets</button><button class="btn ghost sm" id="ctaClose" title="Hide this tip" aria-label="Hide tip">✕</button></div><div id="loadout"></div></div>
     </section>
     <section class="panel" id="focus">
       <h2>Material comparison <span class="sub">every material the selected item can be made from</span></h2>
@@ -405,7 +413,7 @@ function conflicts(a, b){
   return b.groups.flatMap(g=>GROUP_PARTS[g]||[g]).some(p=>pa.has(p));
 }
 function itemName(id, stuff){ const a=APP[id]; return (stuff && STUFF[stuff] ? STUFF[stuff].label+' ' : '') + a.label; }
-const dmgColor = p => p<=.3?'var(--good)':p<=.55?'#c9cf6a':p<=.8?'var(--hot)':'var(--bad)';
+const dmgColor = p => p<=.3?'var(--good)':p<=.55?'#d6e04a':p<=.8?'var(--hot)':'var(--bad)';
 
 /* ---------- actions ---------- */
 function snapshot(){ return {items:compact(state.items), name:state.outfitName}; }
@@ -771,7 +779,9 @@ function renderPresets(){
   }
   $('presetBody').innerHTML = html;
 }
-function openPresets(tab){ if(tab) state.presetTab = tab; $('presetModal').hidden = false; document.body.style.overflow='hidden'; renderPresets(); }
+function seenPresets(){ try{ return localStorage.getItem('rw-apparel-planner-seen')==='1'; }catch(e){ return false; } }
+function markSeen(){ try{ localStorage.setItem('rw-apparel-planner-seen','1'); }catch(e){} $('openPresets').classList.remove('pulse'); $('presetsCta').hidden = true; }
+function openPresets(tab){ if(tab) state.presetTab = tab; markSeen(); $('presetModal').hidden = false; document.body.style.overflow='hidden'; renderPresets(); }
 function closePresets(){ $('presetModal').hidden = true; document.body.style.overflow=''; save(); }
 function saveCurrent(name){
   if(!state.items.length){ toast('Nothing worn to save'); return; }
@@ -786,7 +796,8 @@ function render(){ renderPicker(); renderLoadout(); renderFocus(); renderSummary
 document.addEventListener('click', e=>{
   const T = e.target;
   if(T.closest('#toastUndo')){ if(undoSnap){ const s=undoSnap; undoSnap=null; state.items = toItems(s.items); state.outfitName = s.name||''; state.focus = pickFocus(); render(); toast('Undone'); } return; }
-  if(T.closest('#openPresets')){ openPresets(); return; }
+  if(T.closest('[data-open-presets]')){ openPresets(); return; }
+  if(T.closest('#ctaClose')){ markSeen(); return; }
   if(T.closest('#closePresets') || T.id==='presetModal'){ closePresets(); return; }
   const tab = T.closest('[data-tab]'); if(tab){ state.presetTab = tab.dataset.tab; renderPresets(); return; }
   if(T.closest('#saveNow')){ saveCurrent($('saveName').value); renderPresets(); return; }
@@ -826,6 +837,8 @@ $('clearBtn').addEventListener('click', ()=>{ if(!state.items.length) return; co
 $('weapon').innerHTML = WEAPONS.map(w=>`<option value="${w[0]}">${esc(w[1])}${w[3]!=null?` · ${w[2]} ${Math.round(w[3]*100)}% AP`:''}</option>`).join('');
 $('allQ').innerHTML += QUALITIES.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
 $('presetQ').innerHTML = QUALITIES.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
+$('presetCount').textContent = POPULAR.length + OBJECTIVES.length;
+if(!seenPresets()){ $('openPresets').classList.add('pulse'); $('presetsCta').hidden = false; }
 load();
 if(!hadStorage){ const p = POPULAR.find(p=>p.name==='Devilstrand standard'); state.items = toItems(p.items.map(([id,st])=>[id,st,2])); state.outfitName = p.name; }
 state.focus = pickFocus();
